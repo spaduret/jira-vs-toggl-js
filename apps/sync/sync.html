@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JVT</title>
+    <link rel="stylesheet" type="text/css" href="../../libs/datatables/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../libs/datatables/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="../../libs/datatables/fixedHeader.bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../../styles/sync.item.css">
+    <style type="text/css">
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body style="width: 670px">
+<div>
+    <div style="margin: 5px 10px 5px 5px; width: 100%">
+        <!--<div id="loader" class="loader"></div>-->
+        <table id="workLog" class="display"></table>
+    </div>
+</div>
+<script type="text/javascript" src="../../libs/requirejs/require.js"></script>
+<script type="text/javascript" src="app.js"></script>
+</body>
+
+</html>

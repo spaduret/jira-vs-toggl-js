@@ -1,0 +1,28 @@
+{
+    "manifest_version": 2,
+    "name": "Jira vs Toggl Sync",
+    "description": "Sync work log records from Toggl to Jira",
+    "version": "1.0",
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "apps/sync/sync.html",
+        "default_title": "Toggl to Jira Sync"
+    },
+    "options_ui": {
+        "page": "apps/options/options.html",
+        "open_in_tab": true
+    },
+    "background": {
+        "scripts": [
+            "libs/requirejs/require.js",
+            "apps/background/background.js"
+        ],
+        "persistent": false
+    },
+    "permissions": [
+        "storage",
+        "activeTab",
+        "http://*/*",
+        "https://*/*"
+    ]
+}
