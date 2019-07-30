@@ -6,7 +6,7 @@ define([
     'settings',
     'sync.service',
     'sync.item.view'
-], function (
+], function(
     $,
     _,
     backbone,
@@ -20,18 +20,24 @@ define([
         events: {
             'click [data-role="sync"]': 'onSync'
         },
-        initialize: function () {
+        initialize: function() {
             this.$table = this.$('#workLog');
             this.render();
         },
-        render: function () {
+        render: function() {
             const view = this;
             syncService
                 .getWorkLogAsync()
-                .done(function (workLog) {
+                .fail(function(xhr, status, error) {
+                    alert(xhr.responseText);
+                    chrome.browserAction.setBadgeText({text: '*' + xhr.status});
+                    chrome.browserAction.setBadgeBackgroundColor({color: "black"});
+                })
+                .done(function(workLog) {
                     view.workLog = workLog;
 
                     view.table = view.$table.DataTable({
+                        dom: "<i<'#info.dataTables_info'>>t",
                         data: view.workLog,
                         fixedHeader: true,
                         paging: false,
@@ -81,18 +87,19 @@ define([
                             }
                         ]
                     });
+                    view.$el.find('#info').html(` for the last <b>${settings.reportingRange.asDays()}</b> day(s)`);
                 });
         },
-        renderTime: function (data) {
+        renderTime: function(data) {
             const duration = moment.duration(data || 0, 'm');
             return `${Math.floor(duration.asHours())}h ${duration.minutes()}m`;
         },
-        renderMismatchTime: function (data) {
+        renderMismatchTime: function(data) {
             let duration = Math.abs(data) < settings.timeToIgnoreMinutes
                 ? null
                 : moment.duration(data || 0, 'm');
 
-            if (duration) {
+            if(duration) {
                 const $anchor = $('<span/>', {
                     type: 'span',
                     class: 'mismatch',
@@ -105,12 +112,12 @@ define([
             return null;
         },
         // todo
-        renderTogglTime: function (data) {
+        renderTogglTime: function(data) {
             let duration = Math.abs(data) < settings.timeToIgnoreMinutes
                 ? null
                 : moment.duration(data || 0, 'm');
 
-            if (duration) {
+            if(duration) {
                 const $anchor = $('<a/>', {
                     type: 'a',
                     text: `${Math.floor(duration.asHours())}h ${duration.minutes()}m`,
@@ -123,11 +130,11 @@ define([
 
             return null;
         },
-        renderTask: function (data, type, row) {
+        renderTask: function(data, type, row) {
             return `<a href="${row.taskUrl}" target="_blank">${data}</a>`;
         },
-        renderOptions: function (data, type, row, meta) {
-            if (Math.abs(row.unsynced) < settings.timeToIgnoreMinutes) return null;
+        renderOptions: function(data, type, row, meta) {
+            if(Math.abs(row.unsynced) < settings.timeToIgnoreMinutes) return null;
 
             const $button = $('<button/>', {
                 type: 'button',
@@ -138,7 +145,7 @@ define([
             });
 
             // show RED if jira has more logged work
-            if (row.unsynced < -settings.timeToIgnoreMinutes) {
+            if(row.unsynced < -settings.timeToIgnoreMinutes) {
                 $button
                     .css({color: '#FF0000'})
                     .attr('disabled', 'disabled');
@@ -146,7 +153,7 @@ define([
 
             return $button[0].outerHTML;
         },
-        onSync: function (event) {
+        onSync: function(event) {
             const $target = $(event.currentTarget);
             const data = $target.data();
             const itemToSync = _(this.workLog).find({taskName: data.issue});

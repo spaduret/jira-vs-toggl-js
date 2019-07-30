@@ -1,4 +1,4 @@
-define(function () {
+define(function() {
     'use strict';
 
     require.config({
@@ -52,11 +52,11 @@ define(function () {
             }
         },
         deps: ['jquery', 'underscore'],
-        callback: function ($, _) {
+        callback: function($, _) {
             //use c# style templating: {variable}
             _.templateSettings = {interpolate: /{(.+?)}/g};
-            _.isBetween = function (obj, low, high, inclusive = true) {
-                if (_.isNumber(obj) && _.isNumber(low) && _.isNumber(high)) {
+            _.isBetween = function(obj, low, high, inclusive = true) {
+                if(_.isNumber(obj) && _.isNumber(low) && _.isNumber(high)) {
                     return inclusive
                         ? obj >= low && obj <= high
                         : obj > low && obj < high;

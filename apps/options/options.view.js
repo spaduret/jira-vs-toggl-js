@@ -4,45 +4,49 @@ define([
     'underscore',
     'backbone',
     'settings'
-], function (require, $, _, backbone, settings) {
+], function(require, $, _, backbone, settings) {
     'use strict';
     return backbone.View.extend({
         el: 'body',
         events: {
             'click #save': 'onSave'
         },
-        initialize: function () {
+        initialize: function() {
 
             this.$jiraServer = this.$('#jiraServer');
             this.$jiraEmail = this.$('#jiraEmail');
+            this.$jiraUsername = this.$("#jiraUsername");
             this.$jiraApiToken = this.$('#jiraApiToken');
 
             this.$togglWorkspace = this.$('#togglWorkspace');
             this.$togglApiToken = this.$('#togglApiToken');
-
-            this.$duration = this.$('[name=duration]');
+            this.$duration = this.$('#duration');
 
             this.render();
         },
-        render: function () {
+        render: function() {
             const jiraSettings = settings.jira || {};
             this.$jiraServer.val(jiraSettings.server);
             this.$jiraEmail.val(jiraSettings.email);
+            this.$jiraUsername.val(jiraSettings.username);
             this.$jiraApiToken.val(jiraSettings.apiToken);
 
             const togglSettings = settings.toggl || {};
             this.$togglWorkspace.val(togglSettings.workspace);
             this.$togglApiToken.val(togglSettings.apiToken);
+            this.$duration.val(settings.reportingRange.asDays());
 
-            _(this.$duration).each(function (toggle) {
+            const reportingDays = settings.reportingRange.asDays();
+            _(this.$duration).each(function(toggle) {
                 const $toggle = $(toggle);
-                $toggle.attr('checked', parseInt($toggle.val()) === settings.reportingRange.asDays());
+                $toggle.attr('checked', parseInt($toggle.val()) === reportingDays);
             });
         },
-        onSave: function () {
+        onSave: function() {
             const jiraSettings = {
                 server: this.$jiraServer.val(),
                 email: this.$jiraEmail.val(),
+                username: this.$jiraUsername.val(),
                 apiToken: this.$jiraApiToken.val()
             };
 
@@ -51,25 +55,17 @@ define([
                 apiToken: this.$togglApiToken.val()
             };
 
-            const selectedReportingRange = this.$('[name=duration]:checked').val();
-
             settings.jira = jiraSettings;
             settings.toggl = togglSettings;
-            settings.reportingRange = selectedReportingRange;
+            settings.reportingRange = this.$duration.val();
 
-            // todo: if all settings are good
-            if (true) {
-                require(['sync.service'], function (syncService) {
-                    syncService.updateUnsyncedTaskCount();
-                });
-            } else {
-                chrome.browserAction.setBadgeText({text: ''});
-                chrome.browserAction.setBadgeBackgroundColor({color: "gray"});
-            }
+            require(['sync.service'], function(syncService) {
+                syncService.updateUnsyncedTaskCount();
+            });
 
             this.showMessage('Settings saved.');
         },
-        showMessage: function (message) {
+        showMessage: function(message) {
         }
     });
 });

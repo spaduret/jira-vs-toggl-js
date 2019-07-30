@@ -6,8 +6,10 @@
             <div class="general-popup__close" data-role="close"></div>
         </header>
         <section class="general-popup__body scrollwrapper">
-            <label>Date: <input type="date" data-role="logDate" required/> </label>
-            <textarea data-role="comment" placeholder="add a comment" cols="30" rows="5" maxlength="255"></textarea>
+            <label>Task: <input type="text" data-role="logTask" style="width: 80px;" disabled="disabled"/> </label>
+            <label>Time: <input type="text" data-role="logTime" style="width: 60px;" required title="Time spent in hours only"/> </label>
+            <label>Date: <input type="date" data-role="logDate" style="width: 130px;" required/> </label>
+            <textarea data-role="comment" placeholder="add a comment" style="width: 397px;" rows="5" maxlength="255"></textarea>
             <div style="margin-top: 10px;">
                 <button data-role="sync-item">Sync</button>
                 <button data-role="close">Cancel</button>

@@ -1,43 +1,57 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>JVT</title>
     <style type="text/css">
-        div.inline{
+        div.inline {
             float: left;
         }
     </style>
 </head>
-
 <body>
 <div>
-    <div>
-        <p>Jira profile:</p>
-        <div>
-            <label>Server URL: <input id="jiraServer" placeholder="https://<your company>.atlassian.net/" size="50"></label><br>
-            <label>Email address: <input id="jiraEmail" placeholder="email" size="50"></label><br>
-            <label>ApiToken: <input id="jiraApiToken" placeholder="api token" size="50"></label><br>
-        </div>
-    </div>
-    <div>
-        <p>Toggl profile:</p>
-        <div>
-            <label>Workspace: <input id="togglWorkspace" placeholder="workspace" size="10"></label><br>
-            <label>Api Token: <input id="togglApiToken" placeholder="api token" size="35"></label><br>
-        </div>
-    </div>
-    <div>
-        <div class="inline">
-            <p>Lookup toggl records for:</p>
-        </div>
-        <div class="inline">
-            <label><input type="radio" name="duration" value="1"/> day</label>
-            <label><input type="radio" name="duration" value="7"/> week</label>
-            <label><input type="radio" name="duration" value="30"/> month</label>
-        </div>
-    </div>
+    <table>
+        <tr>
+            <td colspan="2"><p><b>Jira profile</b></p></td>
+        </tr>
+        <tr>
+            <td>Jira URL</td>
+            <td><input id="jiraServer" placeholder="https://<your company>.atlassian.net/" size="35"></td>
+        </tr>
+        <tr>
+            <td>Email address</td>
+            <td><input id="jiraEmail" placeholder="email" size="35"></td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td><input id="jiraUsername" placeholder="username" size="35"></td>
+        </tr>
+        <tr>
+            <td>ApiToken</td>
+            <td><input id="jiraApiToken" placeholder="api token" size="35"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><p><b>Toggl profile:</b></p></td>
+        </tr>
+        <tr>
+            <td>Workspace</td>
+            <td><input id="togglWorkspace" placeholder="workspace" size="35"></td>
+        </tr>
+        <tr>
+            <td>Api Token</td>
+            <td><input id="togglApiToken" placeholder="api token" size="35"></td>
+        </tr>
+        <tr>
+            <td>Lookup time</td>
+            <td>
+                <input type="number" id="duration" style="width: 35px" value="1"/>
+                day(s)
+            </td>
+        </tr>
+    </table>
     <br style="clear: both;"/>
     <button id="save">Save</button>
 </div>

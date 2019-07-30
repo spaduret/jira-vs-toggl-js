@@ -3,7 +3,7 @@ define([
     'underscore',
     'moment',
     'settings'
-], function ($, _, moment, settings) {
+], function($, _, moment, settings) {
     'use strict';
 
     const authToken = btoa(settings.jira.email + ':' + settings.jira.apiToken);
@@ -35,12 +35,12 @@ define([
 
     return {
         settings: settings.jira,
-        getIssuesAsync: function (issues) {
-            if (!issues.length) {
-               const deferred = new $.Deferred();
-               deferred.resolve([]);
+        getIssuesAsync: function(issues) {
+            if(!issues.length) {
+                const deferred = new $.Deferred();
+                deferred.resolve([]);
 
-               return deferred.promise();
+                return deferred.promise();
             }
 
             let jql = "key=";
@@ -51,32 +51,33 @@ define([
                 headers: headers,
                 type: 'GET',
                 async: true
-            }).then(function (response) {
+            }).then(function(response) {
                 // todo: consider to pull more results if available
-                if (response.total > response.maxResults)
+                if(response.total > response.maxResults)
                     throw new Error('More jira issues available');
 
                 return response.issues;
             });
         },
-        getWorklogAsync: function(issueKey){
+        getIssueWorklogAsync: function(issueKey) {
+            const settings = this.settings;
 
             return $.ajax({
                 url: urls.worklog.replace('{0}', issueKey),
                 headers: headers,
                 type: 'GET',
                 async: true
-            }).then(function (response) {
-                return _(response[0].worklogs)
-                    .filter(function (w) {
-                        return w.author.name === this.settings.username;
+            }).then(function(response) {
+                return _(response.worklogs)
+                    .filter(function(w) {
+                        return w.author.name === settings.username;
                     })
-                    .reduce(function (memo, log) {
+                    .reduce(function(memo, log) {
                         return memo + log.timeSpentSeconds;
                     }, 0);
             });
         },
-        getFields: function(){
+        getFields: function() {
             let result = null;
 
             $.ajax({
@@ -84,16 +85,14 @@ define([
                 headers: headers,
                 type: 'GET',
                 async: true
-            }).done(function (response) {
+            }).done(function(response) {
                 result = response;
             });
 
             return result;
         },
-        logWork: function (issue) {
-            let result = null;
-
-            $.ajax({
+        logWorkAsync: function(issue) {
+            return $.ajax({
                 url: urls.logWork.replace('{0}', issue.taskName),
                 headers: headers,
                 type: 'POST',
@@ -102,21 +101,9 @@ define([
                 data: JSON.stringify({
                     started: issue.logDate.utc().format('YYYY-MM-DDTHH:mm:ss.SSS+0300'),
                     comment: issue.comment,
-                    timeSpentSeconds: issue.unsynced * 60
-                }),
-                statusCode:
-                    {
-                        500: function (xhr, message) {
-                            result = message;
-                        },
-                        201: function (response, status, xhr) {
-                            // all good
-                            result = response;
-                        }
-                    }
+                    timeSpentSeconds: Math.round(issue.unsynced * 60)
+                })
             });
-
-            return result;
         }
     };
 });

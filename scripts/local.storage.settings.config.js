@@ -4,7 +4,7 @@ define(function () {
     return {
         jira: "jvt.jira.settings",
         toggl: "jvt.toggl.settings",
-        ignoreUnsyncedMinutes: "jvt.ignoreUnsyncedMinutes",
-        timeToIgnoreMinutes: "jvt.timeToIgnoreMinutes"
+        timeToIgnoreMinutes: "jvt.timeToIgnoreMinutes",
+        reportingRange: "jvt.reportingRange"
     };
 });

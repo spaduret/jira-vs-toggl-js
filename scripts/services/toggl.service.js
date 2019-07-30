@@ -106,7 +106,7 @@ define([
                             async: true
                         })
                         .then(function (response) {
-                            return Math.round(response[0].total_grand / 1000);
+                            return Math.round(response.total_grand / 1000);
                         });
                 });
         }

@@ -31,11 +31,12 @@ define([
                                         return issue.key === task.task;
                                     });
 
-                                    const issueWorklogTask = jiraService.getWorklogAsync(issue.key);
+                                    const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
                                     const togglLoggedTimeTask = togglService.getTotalLoggedTimeByTitleAsync(togglLog.title);
 
                                     $
                                         .when(issueWorklogTask, togglLoggedTimeTask)
+                                        .fail(deferred.reject)
                                         .done(function (issueWorklog, totalTime) {
 
                                             const jiraTime = Math.round(issueWorklog / 60);
@@ -54,16 +55,14 @@ define([
 
             return deferred.promise();
         },
-        sync: function (itemToSync) {
+        syncAsync: function (itemToSync) {
             if (!(itemToSync.unsynced > 0))
                 throw new Error('Can log only positive time, Bad time value: ' + itemToSync.unsynced);
 
             if (!itemToSync.logDate.isValid())
                 throw new Error('Log date is required');
 
-            const result = jiraService.logWork(itemToSync);
-
-            return result;
+            return jiraService.logWorkAsync(itemToSync);
         },
         timerSetup: function () {
             let view = this;
@@ -82,6 +81,10 @@ define([
             if (isNaN(tasksCount)) {
                 view
                     .getWorkLogAsync()
+                    .fail(function(xhr, status, error){
+                        chrome.browserAction.setBadgeText({text: '*' + xhr.status});
+                        chrome.browserAction.setBadgeBackgroundColor({color: "black"});
+                    })
                     .done(function (log) {
                         const count = _(log).filter(function (w) {
                             return w.unsynced > settings.timeToIgnoreMinutes;

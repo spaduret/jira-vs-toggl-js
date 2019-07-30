@@ -3,13 +3,13 @@ define(['settings.config', 'moment'], function (settingsConfig, moment) {
 
     return {
         get jira() {
-            return JSON.parse(window.localStorage.getItem(settingsConfig.jira));
+            return JSON.parse(window.localStorage.getItem(settingsConfig.jira)) || {};
         },
         set jira(settings) {
             window.localStorage.setItem(settingsConfig.jira, JSON.stringify(settings));
         },
         get toggl() {
-            return JSON.parse(window.localStorage.getItem(settingsConfig.toggl));
+            return JSON.parse(window.localStorage.getItem(settingsConfig.toggl)) || {};
         },
         set toggl(settings) {
             window.localStorage.setItem(settingsConfig.toggl, JSON.stringify(settings));
