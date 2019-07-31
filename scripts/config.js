@@ -12,6 +12,8 @@ define(function() {
             'backbone': 'libs/backbone/backbone.min',
             'moment': 'libs/moment/moment.min',
             'text': 'libs/requirejs/text',
+            'hbars': 'libs/requirejs/hbars',
+            'Handlebars': 'libs/handlebars/handlebars-v4.1.2',
 
             'datatables.net': 'libs/datatables/jquery.dataTables.min',
             'datatables.net-bs': 'libs/datatables/dataTables.bootstrap.min',
@@ -37,6 +39,9 @@ define(function() {
         shim: {
             backbone: {
                 deps: ['jquery', 'underscore']
+            },
+            hbars: {
+                deps: ['text', 'Handlebars']
             },
             'datatables.net-fixedheader': {
                 deps: ['datatables.net-bs']
