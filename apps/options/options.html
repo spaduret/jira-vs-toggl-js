@@ -1,10 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>JVT</title>
+    <link rel="stylesheet" type="text/css" href="../../styles/sync.item.css">
     <style type="text/css">
         div.inline {
             float: left;
@@ -12,51 +12,56 @@
     </style>
 </head>
 <body>
-<div>
-    <table>
-        <tr>
-            <td colspan="2"><p><b>Jira profile</b></p></td>
-        </tr>
-        <tr>
-            <td>Jira URL</td>
-            <td><input id="jiraServer" placeholder="https://<your company>.atlassian.net/" size="35"></td>
-        </tr>
-        <tr>
-            <td>Email address</td>
-            <td><input id="jiraEmail" placeholder="email" size="35"></td>
-        </tr>
-        <tr>
-            <td>Username</td>
-            <td><input id="jiraUsername" placeholder="username" size="35"></td>
-        </tr>
-        <tr>
-            <td>ApiToken</td>
-            <td><input id="jiraApiToken" placeholder="api token" size="35"></td>
-        </tr>
-        <tr>
-            <td colspan="2"><p><b>Toggl profile:</b></p></td>
-        </tr>
-        <tr>
-            <td>Workspace</td>
-            <td><input id="togglWorkspace" placeholder="workspace" size="35"></td>
-        </tr>
-        <tr>
-            <td>Api Token</td>
-            <td><input id="togglApiToken" placeholder="api token" size="35"></td>
-        </tr>
-        <tr>
-            <td>Lookup time</td>
-            <td>
-                <input type="number" id="duration" style="width: 35px" value="1"/>
-                day(s)
-            </td>
-        </tr>
-    </table>
-    <br style="clear: both;"/>
-    <button id="save">Save</button>
+<div class="general-popup">
+    <div class="general-popup__overlay" data-role="close"></div>
+    <div class="general-popup__container" data-role="container" style="width: fit-content;">
+        <header class="general-popup__head bg">
+            <h2 class="general-popup__title">Options</h2>
+        </header>
+        <section class="general-popup__body scrollwrapper">
+            <table style="border-bottom: 1px solid; padding-bottom: 5px;">
+                <tr>
+                    <td colspan="2"><p><b>Jira profile</b></p></td>
+                </tr>
+                <tr>
+                    <td>Jira URL</td>
+                    <td><input id="jiraServer" placeholder="https://<your company>.atlassian.net/" size="35"></td>
+                </tr>
+                <tr>
+                    <td>Email address</td>
+                    <td><input id="jiraEmail" placeholder="email" size="35"></td>
+                </tr>
+                <tr>
+                    <td>Username</td>
+                    <td><input id="jiraUsername" placeholder="username" size="35"></td>
+                </tr>
+                <tr>
+                    <td>ApiToken</td>
+                    <td><input id="jiraApiToken" placeholder="api token" size="35"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><p><b>Toggl profile:</b></p></td>
+                </tr>
+                <tr>
+                    <td>Workspace</td>
+                    <td><input id="togglWorkspace" placeholder="workspace" size="35"></td>
+                </tr>
+                <tr>
+                    <td>Api Token</td>
+                    <td><input id="togglApiToken" placeholder="api token" size="35"></td>
+                </tr>
+                <tr>
+                    <td>Lookup time</td>
+                    <td><input type="number" id="duration" style="width: 35px" value="1"/> day(s)</td>
+                </tr>
+            </table>
+            <div style="margin-top: 10px; float: right;">
+                <button id="save">Save</button>
+            </div>
+        </section>
+    </div>
 </div>
 <script src="../../libs/requirejs/require.js" type="text/javascript"></script>
 <script src="app.js" type="text/javascript"></script>
 </body>
-
 </html>

@@ -19,6 +19,7 @@ define([
 
             togglService
                 .getSummaryAsync(period)
+                .fail(deferred.reject)
                 .done(function (summary) {
                     const tasks = _(summary).pluck('task');
 
