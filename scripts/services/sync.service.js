@@ -33,7 +33,7 @@ define([
                                     });
 
                                     const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
-                                    const togglLoggedTimeTask = togglService.getTotalLoggedTimeByTitleAsync(togglLog.title);
+                                    const togglLoggedTimeTask = togglService.getTotalLoggedTimeByTitleAsync(togglLog.task);
 
                                     $
                                         .when(issueWorklogTask, togglLoggedTimeTask)
