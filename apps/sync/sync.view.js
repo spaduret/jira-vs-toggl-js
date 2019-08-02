@@ -87,7 +87,7 @@ define([
                             }
                         ]
                     });
-                    view.$el.find('#info').html(` for the last <b>${settings.reportingRange.asDays()}</b> day(s)`);
+                    view.$el.find('#info').html(`work log summary for the last <b>${settings.reportingRange.asDays()}</b> day(s)`);
                 });
         },
         renderTime: function(data) {
