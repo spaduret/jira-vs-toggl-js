@@ -25,14 +25,6 @@ define([
         worklog: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/issue/{0}/worklog'
     };
 
-    // validate credentials
-    // $.ajax({
-    //     url: urls.mypermissions,
-    //     headers: headers,
-    //     type: 'GET',
-    //     async: false
-    // });
-
     return {
         settings: settings.jira,
         getIssuesAsync: function(issues) {
@@ -101,7 +93,7 @@ define([
                 data: JSON.stringify({
                     started: issue.logDate.utc().format('YYYY-MM-DDTHH:mm:ss.SSS+0300'),
                     comment: issue.comment,
-                    timeSpentSeconds: Math.round(issue.unsynced * 60)
+                    timeSpentSeconds: Math.round(issue.timeSpentSeconds)
                 })
             });
         }

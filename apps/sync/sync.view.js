@@ -91,13 +91,13 @@ define([
                 });
         },
         renderTime: function(data) {
-            const duration = moment.duration(data || 0, 'm');
+            const duration = moment.duration(data || 0, 'second');
             return `${Math.floor(duration.asHours())}h ${duration.minutes()}m`;
         },
         renderMismatchTime: function(data) {
-            let duration = Math.abs(data) < settings.timeToIgnoreMinutes
+            let duration = Math.abs(data) < settings.timeToIgnoreSeconds
                 ? null
-                : moment.duration(data || 0, 'm');
+                : moment.duration(data || 0, 'second');
 
             if(duration) {
                 const $anchor = $('<span/>', {
@@ -134,7 +134,7 @@ define([
             return `<a href="${row.taskUrl}" target="_blank">${data}</a>`;
         },
         renderOptions: function(data, type, row, meta) {
-            if(Math.abs(row.unsynced) < settings.timeToIgnoreMinutes) return null;
+            if(Math.abs(row.unsynced) < settings.timeToIgnoreSeconds) return null;
 
             const $button = $('<button/>', {
                 type: 'button',
@@ -145,7 +145,7 @@ define([
             });
 
             // show RED if jira has more logged work
-            if(row.unsynced < -settings.timeToIgnoreMinutes) {
+            if(row.unsynced < -settings.timeToIgnoreSeconds) {
                 $button
                     .css({color: '#FF0000'})
                     .attr('disabled', 'disabled');

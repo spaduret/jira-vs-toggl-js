@@ -40,6 +40,9 @@ define([
                                 return ws.name === settings.toggl.workspace;
                             });
 
+                        settings.workspaceId = workspace.id;
+                        settings.userId = response.data.id;
+
                         deferred.resolve({
                             workspaceId: workspace.id,
                             userId: response.data.id

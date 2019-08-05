@@ -1,4 +1,4 @@
-define(['settings.config', 'moment'], function (settingsConfig, moment) {
+define(['settings.config', 'moment'], function(settingsConfig, moment) {
     'use strict';
 
     return {
@@ -24,18 +24,15 @@ define(['settings.config', 'moment'], function (settingsConfig, moment) {
             const intDays = parseInt(days.toString());
             if(intDays <= 0)
                 throw new Error('Bad duration value: ' + days);
-            
+
             const duration = moment.duration(intDays, 'days');
             if(!duration.isValid())
                 throw new Error('Bad duration value: ' + days);
-            
+
             window.localStorage.setItem(settingsConfig.reportingRange, duration.asDays());
         },
-        get timeToIgnoreMinutes() {
-            return parseInt(window.localStorage.getItem(settingsConfig.timeToIgnoreMinutes)) || 2;
-        },
-        set timeToIgnoreMinutes(time) {
-            return window.localStorage.setItem(settingsConfig.timeToIgnoreMinutes, time);
+        get timeToIgnoreSeconds() {
+            return 30
         }
     };
 });

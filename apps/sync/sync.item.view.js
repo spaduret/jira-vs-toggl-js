@@ -7,7 +7,7 @@ define([
     'settings',
 
     'text!../apps/sync/sync.item.template.html'
-], function ($, _, backbone, moment, syncService, settings, template) {
+], function($, _, backbone, moment, syncService, settings, template) {
     return backbone.View.extend({
         events: {
             'click [data-role=close]': 'delete',
@@ -28,7 +28,7 @@ define([
             this.$comment = this.$('[data-role=comment]');
 
             this.$logTask.val(this.model.taskName);
-            this.$logTime.val(moment.duration(this.model.unsynced, 'minutes').asHours().toFixed(2) + 'h');
+            this.$logTime.val(moment.duration(this.model.unsynced, 'second').asHours().toFixed(2) + 'h');
             this.$logDate.val(this.model.logDate.format('YYYY-MM-DD'));
             this.$comment.val(this.model.comment);
         },
@@ -49,7 +49,7 @@ define([
             if(isValid) {
                 const issue = {
                     taskName: view.model.taskName,
-                    unsynced: parseFloat(view.$logTime.val()) * 60,
+                    timeSpentSeconds: parseFloat(view.$logTime.val()) * 3600,
                     logDate: moment(view.$logDate.val()),
                     comment: view.$comment.val()
                 };
@@ -59,8 +59,15 @@ define([
                     .fail((xhr) => alert(xhr.responseText))
                     .done(function(result) {
                         if(_(result).has('timeSpentSeconds')) {
+                            //log trace info
+                            console.log({
+                                task: issue.taskName,
+                                logged: view.model.jiraTime,
+                                diff: view.model.unsynced,
+                                afterSync: result.timeSpentSeconds
+                            });
                             // update work log
-                            view.model.jiraTime = Math.round(result.timeSpentSeconds / 60);
+                            view.model.jiraTime = result.timeSpentSeconds;
 
                             // update table
                             view.options.table
@@ -72,7 +79,7 @@ define([
 
                             const unSyncedCount = _(view.options.table.data())
                                 .filter(function(row) {
-                                    return Math.abs(row.unsynced) >= settings.timeToIgnoreMinutes;
+                                    return Math.abs(row.unsynced) >= settings.timeToIgnoreSeconds;
                                 })
                                 .length;
 

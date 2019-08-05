@@ -38,10 +38,7 @@ define([
                                     $
                                         .when(issueWorklogTask, togglLoggedTimeTask)
                                         .fail(deferred.reject)
-                                        .done(function(issueWorklog, totalTime) {
-
-                                            const jiraTime = Math.round(issueWorklog / 60);
-                                            const togglTime = Math.round(totalTime / 60);
+                                        .done(function(jiraTime, togglTime) {
                                             const item = new SyncItem(togglLog.task, issue.fields.summary, togglTime, jiraTime);
 
                                             taskLog.push(item);
@@ -57,8 +54,8 @@ define([
             return deferred.promise();
         },
         syncAsync: function(itemToSync) {
-            if(!(itemToSync.unsynced > 0))
-                throw new Error('Can log only positive time, Bad time value: ' + itemToSync.unsynced);
+            if(!(itemToSync.timeSpentSeconds > 0))
+                throw new Error('Can log only positive time, Bad time value: ' + itemToSync.timeSpentSeconds);
 
             if(!itemToSync.logDate.isValid())
                 throw new Error('Log date is required');
@@ -76,11 +73,11 @@ define([
                         chrome.browserAction.setBadgeBackgroundColor({color: "black"});
                     })
                     .done(function(log) {
-                        const count = _(log).filter((w) => w.unsynced > settings.timeToIgnoreMinutes).length;
+                        const count = _(log).filter((w) => w.unsynced > settings.timeToIgnoreSeconds).length;
+                        const hasNegativeDiff = _(log).some((w) => w.unsynced < 0 && Math.abs(w.unsynced) > settings.timeToIgnoreSeconds);
 
-                        const negativeTimeCount = _(log).some((w) => w.unsynced < 0);
                         let badgeColor = null;
-                        if(negativeTimeCount > 0)
+                        if(hasNegativeDiff)
                             badgeColor = "orange";
 
                         view.setBadgeText(count, badgeColor);
