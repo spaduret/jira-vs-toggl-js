@@ -56,8 +56,8 @@ define([
                             {title: 'Description', data: 'taskDescription', orderable: false},
                             {
                                 title: 'Toggl',
-                                data: 'togglTime',
-                                render: view.renderTime,
+                                data: null,
+                                render: view.renderTogglTime,
                                 className: 'dt-center',
                                 searchable: false,
                                 width: '50px'
@@ -111,18 +111,17 @@ define([
 
             return null;
         },
-        // todo
         renderTogglTime: function(data) {
-            let duration = Math.abs(data) < settings.timeToIgnoreMinutes
-                ? null
-                : moment.duration(data || 0, 'm');
+            const duration = moment.duration(data.togglTime || 0, 'second');
+            const from = moment().add(-1, 'y').format('YYYY-MM-DD');
+            const to = moment().format('YYYY-MM-DD');
 
             if(duration) {
                 const $anchor = $('<a/>', {
                     type: 'a',
                     text: `${Math.floor(duration.asHours())}h ${duration.minutes()}m`,
-                    //href: 'https://toggl.com/app/reports/detailed/617655/description/CCM-1882%20Usage%20Report/from/2018-04-22/to/2019-04-22/users/996236',
-                    //target: '_blank'
+                    href: `https://toggl.com/app/reports/summary/${settings.workspaceId}/description/${data.taskName}/from/${from}/to/${to}/users/${settings.userId}`,
+                    target: '_blank'
                 });
 
                 return $anchor[0].outerHTML;
