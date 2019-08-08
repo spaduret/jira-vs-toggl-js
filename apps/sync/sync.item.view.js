@@ -4,10 +4,11 @@ define([
     'backbone',
     'moment',
     'sync.service',
+    'jira.service',
     'settings',
 
     'text!../apps/sync/sync.item.template.html'
-], function($, _, backbone, moment, syncService, settings, template) {
+], function($, _, backbone, moment, syncService, jiraService, settings, template) {
     return backbone.View.extend({
         events: {
             'click [data-role=close]': 'delete',
@@ -21,14 +22,14 @@ define([
         render: function() {
             this.$el.html(template);
             $('body').append(this.$el);
-
+            const toLog = moment.duration(this.model.unsynced, 'second');
             this.$logTask = this.$('[data-role=logTask]');
             this.$logTime = this.$('[data-role=logTime]');
             this.$logDate = this.$('[data-role=logDate]');
             this.$comment = this.$('[data-role=comment]');
 
             this.$logTask.val(this.model.taskName);
-            this.$logTime.val(moment.duration(this.model.unsynced, 'second').asHours().toFixed(2) + 'h');
+            this.$logTime.val(`${toLog.hours()}h ${toLog.minutes()}m ${toLog.seconds()}s`);
             this.$logDate.val(this.model.logDate.format('YYYY-MM-DD'));
             this.$comment.val(this.model.comment);
         },
@@ -43,13 +44,34 @@ define([
 
             return isValidComment && isValidDate && isValidTime;
         },
+        parseTime: function(time) {
+            const duration = moment.duration();
+            _(time.split(' '))
+                .each((t) => {
+                    const timeValue = _.initial(t).join("");
+                    const dur = _.last(t);
+                    duration.add(parseInt(timeValue), dur);
+                });
+
+            if(duration.isValid() && duration.asSeconds() > 0)
+                return duration;
+
+            return null;
+        },
         sync: function() {
             const view = this;
             const isValid = view.validate();
             if(isValid) {
+                const toLog = view.$logTime.val();
+                const duration = this.parseTime(toLog);
+                if(!duration) {
+                    alert('Bad time format');
+                    return;
+                }
+
                 const issue = {
                     taskName: view.model.taskName,
-                    timeSpentSeconds: parseFloat(view.$logTime.val()) * 3600,
+                    timeSpentSeconds: duration.asSeconds(),
                     logDate: moment(view.$logDate.val()),
                     comment: view.$comment.val()
                 };
@@ -57,17 +79,20 @@ define([
                 syncService
                     .syncAsync(issue)
                     .fail((xhr) => alert(xhr.responseText))
-                    .done(function(result) {
-                        if(_(result).has('timeSpentSeconds')) {
+                    .then(() => jiraService.getIssueWorklogAsync(issue.taskName))
+                    .done(function(jiraTime) {
+                        if(jiraTime) {
                             //log trace info
                             console.log({
                                 task: issue.taskName,
-                                logged: view.model.jiraTime,
+                                jiraTime: view.model.jiraTime,
+                                togglTime: view.model.togglTime,
                                 diff: view.model.unsynced,
-                                afterSync: result.timeSpentSeconds
+                                toLog: issue.timeSpentSeconds,
+                                afterSync: jiraTime
                             });
                             // update work log
-                            view.model.jiraTime = result.timeSpentSeconds;
+                            view.model.jiraTime = jiraTime;
 
                             // update table
                             view.options.table

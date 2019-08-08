@@ -32,7 +32,7 @@ define(['settings.config', 'moment'], function(settingsConfig, moment) {
             window.localStorage.setItem(settingsConfig.reportingRange, duration.asDays());
         },
         get timeToIgnoreSeconds() {
-            return 30
+            return 60;
         }
     };
 });
