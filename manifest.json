@@ -20,9 +20,10 @@
         "persistent": false
     },
     "permissions": [
+        "alarms",
         "storage",
-        "activeTab",
-        "http://*/*",
-        "https://*/*"
+        "https://*.atlassian.net/*",
+        "https://www.toggl.com/*",
+        "https://toggl.com/*"
     ]
 }
