@@ -27,26 +27,29 @@ define([
                         .getIssuesAsync(tasks)
                         .then(function(issues) {
                             _(issues)
-                                .each(function(issue) {
-                                    const togglLog = _(summary).find(function(task) {
-                                        return issue.key === task.task;
-                                    });
-
-                                    const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
-                                    const togglLoggedTimeTask = togglService.getTotalLoggedTimeByTitleAsync(togglLog.task);
-
-                                    $
-                                        .when(issueWorklogTask, togglLoggedTimeTask)
-                                        .fail(deferred.reject)
-                                        .done(function(jiraTime, togglTime) {
-                                            const item = new SyncItem(togglLog.task, issue.fields.summary, togglTime, jiraTime);
-
-                                            taskLog.push(item);
-
-                                            if(taskLog.length === issues.length) {
-                                                deferred.resolve(taskLog);
-                                            }
+                                .each(function(issue, i) {
+                                    setTimeout(function() {
+                                        const togglLog = _(summary).find(function(task) {
+                                            return issue.key === task.task;
                                         });
+
+                                        const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
+                                        const togglLoggedTimeTask = togglService.getTotalLoggedTimeByTitleAsync(togglLog.task);
+
+                                        $
+                                            .when(issueWorklogTask, togglLoggedTimeTask)
+                                            .fail(deferred.reject)
+                                            .done(function(jiraTime, togglTime) {
+                                                const item = new SyncItem(togglLog.task, issue.fields.summary, togglTime, jiraTime);
+
+                                                taskLog.push(item);
+
+                                                if(taskLog.length === issues.length) {
+                                                    deferred.resolve(taskLog);
+                                                }
+                                            });
+
+                                    }, settings.toggl.syncApiCall ? 200 * i : 0);
                                 });
                         });
                 });

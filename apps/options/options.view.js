@@ -21,6 +21,7 @@ define([
             this.$togglWorkspace = this.$('#togglWorkspace');
             this.$togglApiToken = this.$('#togglApiToken');
             this.$duration = this.$('#duration');
+            this.$syncApiCall = this.$('#syncApiCall');
 
             this.render();
         },
@@ -35,12 +36,7 @@ define([
             this.$togglWorkspace.val(togglSettings.workspace);
             this.$togglApiToken.val(togglSettings.apiToken);
             this.$duration.val(settings.reportingRange.asDays());
-
-            const reportingDays = settings.reportingRange.asDays();
-            _(this.$duration).each(function(toggle) {
-                const $toggle = $(toggle);
-                $toggle.attr('checked', parseInt($toggle.val()) === reportingDays);
-            });
+            this.$syncApiCall.attr('checked', settings.toggl.syncApiCall ? 'checked' : null);
         },
         onSave: function() {
             const jiraSettings = {
@@ -52,7 +48,8 @@ define([
 
             const togglSettings = {
                 workspace: this.$togglWorkspace.val(),
-                apiToken: this.$togglApiToken.val()
+                apiToken: this.$togglApiToken.val(),
+                syncApiCall: this.$syncApiCall.is(':checked')
             };
 
             settings.jira = jiraSettings;
