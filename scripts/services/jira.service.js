@@ -15,14 +15,21 @@ define([
         'Authorization': 'Basic ' + authToken
     };
 
+    // getting Jira Base URL
+    let jiraBaseUrl = settings.jira.server;
+    if (!jiraBaseUrl)
+        throw new Error('Not found Jira Server URL configuration.');
+    if (jiraBaseUrl[jiraBaseUrl.length - 1] === '/') {
+        jiraBaseUrl = jiraBaseUrl.substr(0, jiraBaseUrl.length - 1);
+    }
     const apiVersion = '2';
     const urls = {
-        mypermissions: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/mypermissions',
-        issue: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/issue/',
-        logWork: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/issue/{0}/worklog',
-        issues: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/search?jql={0}&fields=id,key,summary&maxResults=100',
-        fields: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/field',
-        worklog: 'https://teamvelocitymarketing.atlassian.net/rest/api/' + apiVersion + '/issue/{0}/worklog'
+        mypermissions: jiraBaseUrl + '/rest/api/' + apiVersion + '/mypermissions',
+        issue: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/',
+        logWork: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog',
+        issues: jiraBaseUrl + '/rest/api/' + apiVersion + '/search?jql={0}&fields=id,key,summary&maxResults=100',
+        fields: jiraBaseUrl + '/rest/api/' + apiVersion + '/field',
+        worklog: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog'
     };
 
     return {
