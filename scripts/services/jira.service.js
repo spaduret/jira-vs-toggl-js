@@ -98,7 +98,7 @@ define([
                 dataType: 'JSON',
                 async: true,
                 data: JSON.stringify({
-                    started: issue.logDate.utc().format('YYYY-MM-DDTHH:mm:ss.SSS+0300'),
+                    started: issue.logDate.format('YYYY-MM-DDTHH:mm:ss.SSS-1200'),
                     comment: issue.comment,
                     timeSpentSeconds: Math.round(issue.timeSpentSeconds)
                 })
