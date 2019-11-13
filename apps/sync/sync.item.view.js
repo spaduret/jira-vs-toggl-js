@@ -177,7 +177,7 @@ define([
                                 let row = view.options.table.rows((index, data) => data.taskName === item.taskName);
                                 // update table
                                 view.options.table
-                                    .row(view.options.row)
+                                    .row(row)
                                     .data(item)
                                     .draw();
                             });
