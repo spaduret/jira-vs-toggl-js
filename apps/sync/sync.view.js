@@ -44,7 +44,7 @@ define([
                         searching: false,
                         ordering: true,
                         info: true,
-                        order: [[4, 'desc'], [0, 'asc']],
+                        order: [[0, 'asc']],
                         columns: [
                             {
                                 title: 'Task',
@@ -85,9 +85,19 @@ define([
                                 orderable: false,
                                 searchable: false
                             }
-                        ]
+                        ],
+                        drawCallback: function() {
+                            let hasItemsToSync = _(view.workLog)
+                                .some((row) => Math.abs(row.unsynced) > settings.timeToIgnoreSeconds && row.unsynced > -settings.timeToIgnoreSeconds);
+                            view.$el.find('#sync-all').toggle(hasItemsToSync);
+                        }
                     });
                     view.$el.find('#info').html(`work log summary for the last <b>${settings.reportingRange.asDays()}</b> day(s)`);
+                    view.$el.find('#info').append(` <input id="sync-all" class="sync-all" style="display: none;" type="button" value="sync all ♥">`);
+                    view.$el.find('#sync-all').click(() => view.syncAll());
+
+                    //to show/hide 'sync-all' button
+                    view.table.draw();
                 });
         },
         renderTime: function(data) {
@@ -162,6 +172,17 @@ define([
                 model: itemToSync,
                 table: this.table,
                 row: data.row
+            });
+        },
+        syncAll: function() {
+            let itemsToSync = _(this.workLog)
+                .filter((row) => Math.abs(row.unsynced) > settings.timeToIgnoreSeconds && row.unsynced > -settings.timeToIgnoreSeconds);
+
+            console.log(itemsToSync);
+            new syncItemView({
+                multi: true,
+                //model: itemsToSync,
+                table: this.table
             });
         }
     });

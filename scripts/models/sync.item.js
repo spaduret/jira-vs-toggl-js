@@ -12,7 +12,6 @@ define(["settings", 'moment'], function (settings, moment) {
             set unsynced(value) {
                 throw new Error('\'unsynced\' is readonly property')
             },
-            logDate: moment(),
             comment: null
         };
     };
