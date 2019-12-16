@@ -40,6 +40,10 @@ define([
                 const toLog = moment.duration(this.model.unsynced, 'second');
                 this.$logTime.val(`${toLog.hours()}h ${toLog.minutes()}m ${toLog.seconds()}s`);
             }
+
+            // this.$el.find('.general-popup__container')
+            //     .addClass('g-loading')
+            //     .append('<a data-role="g-loading"></a>');
         },
         validate: function() {
             const isValidDate = moment(this.$logDate.val()).isValid();
@@ -174,7 +178,7 @@ define([
                         _(syncedItems)
                             .each((item) => {
                                 //find row
-                                let row = view.options.table.rows((index, data) => data.taskName === item.taskName);
+                                let row = view.options.table.rows((index, data) => data.taskName === item.taskName)[0];
                                 // update table
                                 view.options.table
                                     .row(row)
