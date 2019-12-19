@@ -40,10 +40,6 @@ define([
                 const toLog = moment.duration(this.model.unsynced, 'second');
                 this.$logTime.val(`${toLog.hours()}h ${toLog.minutes()}m ${toLog.seconds()}s`);
             }
-
-            // this.$el.find('.general-popup__container')
-            //     .addClass('g-loading')
-            //     .append('<a data-role="g-loading"></a>');
         },
         validate: function() {
             const isValidDate = moment(this.$logDate.val()).isValid();
@@ -88,6 +84,7 @@ define([
                     comment: view.$comment.val()
                 };
 
+                this.loading();
                 syncService
                     .syncAsync(issue)
                     .fail((xhr) => alert(xhr.responseText))
@@ -136,7 +133,10 @@ define([
                 const deferred = new $.Deferred();
 
                 const itemsToSync = _(view.options.table.data())
-                    .filter((row) => Math.abs(row.unsynced) > settings.timeToIgnoreSeconds && row.unsynced > -settings.timeToIgnoreSeconds);
+                    .filter((row) => Math.abs(row.unsynced) > settings.timeToIgnoreSeconds &&
+                        row.unsynced > -settings.timeToIgnoreSeconds);
+
+                this.loading();
                 _(itemsToSync)
                     .each((item) => {
                         const issue = {
@@ -198,6 +198,11 @@ define([
                         syncService.updateUnsyncedTaskCount(unSyncedCount);
                     });
             }
+        },
+        loading: function() {
+            this.$el.find('.general-popup__container')
+                .addClass('g-loading')
+                .append('<a data-role="g-loading"></a>');
         },
         delete: function() {
             this.$el.remove();
