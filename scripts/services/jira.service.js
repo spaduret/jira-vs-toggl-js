@@ -68,9 +68,7 @@ define([
                 async: true
             }).then(function(response) {
                 return _(response.worklogs)
-                    .filter(function(w) {
-                        return w.author.name === settings.username;
-                    })
+                    .filter(function(w) { return w.author.emailAddress === settings.email; })
                     .reduce(function(memo, log) {
                         return memo + log.timeSpentSeconds;
                     }, 0);
