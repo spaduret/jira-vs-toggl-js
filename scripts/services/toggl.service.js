@@ -9,9 +9,9 @@ define([
     const taskPattern = /[A-Z]+-\d+/;
 
     const urls = {
-        me: 'https://www.toggl.com/api/v8/me',
-        summary: 'https://toggl.com/reports/api/v2/summary',
-        details: 'https://toggl.com/reports/api/v2/details'
+        me: 'https://toggl.com/api/v8/me',
+        summary: 'https://api.track.toggl.com/reports/api/v2/summary',
+        details: 'https://api.track.toggl.com/reports/api/v2/details'
     };
 
     let headers = {};
@@ -44,8 +44,8 @@ define([
                         settings.userId = response.data.id;
 
                         deferred.resolve({
-                            workspaceId: workspace.id,
-                            userId: response.data.id
+                            workspaceId: settings.workspaceId,
+                            userId: settings.userId
                         });
                     });
             }
