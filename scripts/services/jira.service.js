@@ -68,10 +68,8 @@ define([
                 async: true
             }).then(function(response) {
                 return _(response.worklogs)
-                    .filter(function(w) { return w.author.emailAddress === settings.email; })
-                    .reduce(function(memo, log) {
-                        return memo + log.timeSpentSeconds;
-                    }, 0);
+                    .filter((w) => w.author.emailAddress === settings.email)
+                    .reduce((memo, log) => memo + log.timeSpentSeconds, 0);
             });
         },
         getFields: function() {
