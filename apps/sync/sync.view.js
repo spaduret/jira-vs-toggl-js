@@ -102,7 +102,7 @@ define([
         },
         renderTime: function(data) {
             const duration = moment.duration(data || 0, 'second');
-            return `${duration.hours()}h ${duration.minutes()}m`;
+            return `${duration.asHours() | 0}h ${duration.minutes()}m`;
         },
         renderMismatchTime: function(data) {
             let duration = Math.abs(data) <= settings.timeToIgnoreSeconds
@@ -113,7 +113,7 @@ define([
                 const $anchor = $('<span/>', {
                     type: 'span',
                     class: 'mismatch',
-                    text: `${duration.hours()}h ${duration.minutes()}m`,
+                    text: `${duration.asHours() | 0}h ${duration.minutes()}m`,
                 });
 
                 return $anchor[0].outerHTML;
@@ -129,7 +129,7 @@ define([
             if(duration) {
                 const $anchor = $('<a/>', {
                     type: 'a',
-                    text: `${duration.hours()}h ${duration.minutes()}m`,
+                    text: `${duration.asHours() | 0}h ${duration.minutes()}m`,
                     href: `https://toggl.com/app/reports/summary/${settings.workspaceId}/description/${data.taskName}/from/${from}/to/${to}/users/${settings.userId}`,
                     target: '_blank'
                 });
