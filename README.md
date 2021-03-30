@@ -1,5 +1,8 @@
 Chrome extension to sync time between Toggl and Jira.
 
+First of all you need to download source code.
+Click `Code` button and use your preffered way to checkout source files.
+
 To install this extension go to chrome://extensions/ and enable `Developer mode`.
 Click the `Load unpacked` button and select folder with extension files.
 
@@ -12,4 +15,6 @@ Configuration instructions:
 
 To generate Toggl `API Token` go to [profile](https://toggl.com/app/profile) page.
 
-To generate Jira API Token go to [account](https://id.atlassian.com/manage/api-tokens) page.
+To generate Jira `API Token` go to [account](https://id.atlassian.com/manage/api-tokens) page.
+
+*use your company account to create Jira token.*
