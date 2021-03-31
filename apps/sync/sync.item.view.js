@@ -9,7 +9,17 @@ define([
 
     'text!../apps/sync/sync.item.template.html',
     'text!../apps/sync/sync.multiple.items.template.html',
-], function($, _, backbone, moment, syncService, jiraService, settings, template, multipleTemplate) {
+], function(
+    $,
+    _,
+    backbone,
+    moment,
+    syncService,
+    jiraService,
+    settings,
+
+    template,
+    multipleTemplate) {
     return backbone.View.extend({
         events: {
             'click [data-role=close]': 'delete',
@@ -138,36 +148,42 @@ define([
 
                 this.loading();
                 _(itemsToSync)
-                    .each((item) => {
-                        const issue = {
-                            taskName: item.taskName,
-                            timeSpentSeconds: moment.duration(item.unsynced, 'second').asSeconds(),
+                    .each((task) => {
+                        const comment = view.$comment.val();
+
+                        const syncItem = {
+                            taskName: task.taskName,
+                            timeSpentSeconds: moment.duration(task.unsynced, 'second').asSeconds(),
                             logDate: moment(view.$logDate.val()),
-                            comment: view.$comment.val()
+                            comment: comment
+                                ? comment
+                                //use default comment from task
+                                //will have a value if [useTimeEntryTitleAsComment] setting is enabled
+                                : task.comment
                         };
 
                         syncService
-                            .syncAsync(issue)
+                            .syncAsync(syncItem)
                             .fail((xhr) => deferred.reject(xhr.responseText))
-                            .then(() => jiraService.getIssueWorklogAsync(issue.taskName))
+                            .then(() => jiraService.getIssueWorklogAsync(syncItem.taskName))
                             .then((jiraTime) => {
                                 if(jiraTime) {
                                     //log trace info
                                     console.log({
-                                        task: issue.taskName,
-                                        jiraTime: issue.jiraTime,
-                                        togglTime: issue.togglTime,
-                                        diff: issue.unsynced,
-                                        toLog: issue.timeSpentSeconds,
+                                        task: syncItem.taskName,
+                                        jiraTime: syncItem.jiraTime,
+                                        togglTime: syncItem.togglTime,
+                                        diff: syncItem.unsynced,
+                                        toLog: syncItem.timeSpentSeconds,
                                         afterSync: jiraTime
                                     });
 
-                                    item.jiraTime = jiraTime;
-                                    synced.push(item);
+                                    task.jiraTime = jiraTime;
+                                    synced.push(task);
                                     if(synced.length === itemsToSync.length)
                                         deferred.resolve(synced);
                                 } else
-                                    deferred.reject(`failed to sync time for task ${item.taskName}`);
+                                    deferred.reject(`failed to sync time for task ${task.taskName}`);
                             });
                     });
 

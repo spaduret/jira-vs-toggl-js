@@ -8,7 +8,11 @@ define([
 
     const taskPattern = /[A-Z]+-\d+/;
 
+    // https://github.com/toggl/toggl_api_docs
+    // 'Access-Control-Allow-Origin': 'chrome-extension://gcfmddogfljjdpiojcdfkgoonhafmnlb'
+
     const urls = {
+        // me: 'https://track.toggl.com/api/v8/me',
         me: 'https://toggl.com/api/v8/me',
         summary: 'https://api.track.toggl.com/reports/api/v2/summary',
         details: 'https://api.track.toggl.com/reports/api/v2/details'

@@ -1,4 +1,4 @@
-define(["settings", 'moment'], function (settings, moment) {
+define(["settings", 'moment'], function (settings) {
     return function (taskName, taskDescription, togglTime, jiraTime, comment) {
         return {
             taskName: taskName || null,
