@@ -14,17 +14,24 @@ define([
                 start: moment().subtract(settings.reportingRange),
                 end: moment()
             };
+            const periodExt = {
+                start: moment().add(-365, 'd'),
+                end: moment()
+            };
             const taskLog = [];
             const deferred = new $.Deferred();
 
-            togglService
-                .getSummaryAsync(period)
+            $
+                .when(
+                    togglService.getSummaryAsync(period, settings.toggl.useTimeEntryTitleAsComment),
+                    togglService.getSummaryAsync(periodExt, false))
                 .fail(deferred.reject)
-                .done(function(summary) {
+                .done(function(summary, oneYearSummary) {
                     const tasks = _(summary).pluck('task');
 
                     return jiraService
                         .getIssuesAsync(tasks)
+                        .fail(deferred.reject)
                         .then(function(issues) {
                             _(issues)
                                 .each(function(issue, i) {
@@ -34,13 +41,22 @@ define([
                                         });
 
                                         const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
-                                        const togglLoggedTimeTask = togglService.getTotalLoggedTimeByTitleAsync(togglLog.task);
+                                        const oneYearTogglTime = oneYearSummary.find(t => t.task == issue.key);
 
+                                        // todo: pull toggl entries for more than one year if in jira we have more time
                                         $
-                                            .when(issueWorklogTask, togglLoggedTimeTask)
+                                            .when(issueWorklogTask)
                                             .fail(deferred.reject)
-                                            .done(function(jiraTime, togglTime) {
-                                                const item = new SyncItem(togglLog.task, issue.fields.summary, togglTime, jiraTime);
+                                            .done(function(jiraTime) {
+
+                                                const item = new SyncItem(
+                                                    togglLog.task,
+                                                    issue.fields.summary,
+                                                    oneYearTogglTime.time,
+                                                    jiraTime,
+                                                    settings.toggl.useTimeEntryTitleAsComment
+                                                        ? togglLog.comments
+                                                        : null);
 
                                                 taskLog.push(item);
 

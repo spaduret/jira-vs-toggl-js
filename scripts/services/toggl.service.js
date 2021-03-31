@@ -52,13 +52,17 @@ define([
 
             return deferred.promise();
         },
-        getSummaryAsync: function(period) {
+        getSummaryAsync: function(period, includeComments = false) {
             return this.getSettingsAsync()
                 .then((settings) => {
                     const params = {
                         user_agent: 'jira',
                         workspace_id: settings.workspaceId,
                         user_ids: settings.userId,
+                        grouping: 'users',
+                        subgrouping: 'time_entries',
+                        // subgrouping_ids: true,
+                        // grouped_time_entry_ids: true,
                         since: period.start.format('YYYY-MM-DD'),
                         until: period.end.format('YYYY-MM-DD')
                     };
@@ -90,7 +94,10 @@ define([
                                         title: group[0].title,
                                         time: Math.round(_(group).reduce(function(memo, item) {
                                             return memo + item.time;
-                                        }, 0) / 1000)
+                                        }, 0) / 1000),
+                                        comments: includeComments
+                                            ? group.map(i => i.title).join('\n')
+                                            : null
                                     };
                                 })
                                 .value();
