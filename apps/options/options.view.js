@@ -52,7 +52,7 @@ define([
                 workspace: this.$togglWorkspace.val(),
                 apiToken: this.$togglApiToken.val(),
                 syncApiCall: this.$syncApiCall.is(':checked'),
-                useTimeEntryTitleAsComment: true
+                useTimeEntryTitleAsComment: this.$useTimeEntryTitleAsComment.is(':checked')
             };
 
             settings.jira = jiraSettings;
