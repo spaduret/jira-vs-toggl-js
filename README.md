@@ -5,7 +5,7 @@ Click `Code` button and use your preffered way to checkout source files.
 
 ![image](https://user-images.githubusercontent.com/6294984/113166326-561ee580-924b-11eb-8f14-0db066ba1d88.png)
 
-To install this extension go to [chrome://extensions](chrome://extensions) and enable `Developer mode`.
+To install this extension go to *chrome://extensions* and enable `Developer mode`.
 
 ![image](https://user-images.githubusercontent.com/6294984/113166442-7189f080-924b-11eb-96fd-732a6724e245.png)
 
