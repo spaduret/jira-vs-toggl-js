@@ -21,56 +21,59 @@ define([
             const taskLog = [];
             const deferred = new $.Deferred();
 
-            $
-                .when(
-                    togglService.getSummaryAsync(period, settings.toggl.useTimeEntryTitleAsComment),
-                    togglService.getSummaryAsync(periodExt, false))
+            togglService
+                .getSummaryAsync(period, settings.toggl.useTimeEntryTitleAsComment)
                 .fail(deferred.reject)
-                .done(function(summary, oneYearSummary) {
-                    const tasks = _(summary).pluck('task');
-
-                    return jiraService
-                        .getIssuesAsync(tasks)
+                .done(summary => {
+                    togglService
+                        .getSummaryAsync(periodExt, false)
                         .fail(deferred.reject)
-                        .then(function(issues) {
-                            _(issues)
-                                .each(function(issue, i) {
-                                    setTimeout(function() {
-                                        const togglLog = _(summary).find(function(task) {
-                                            return issue.key === task.task;
-                                        });
-
-                                        const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
-                                        const oneYearTogglTime = oneYearSummary.find(t => t.task == issue.key);
-
-                                        // todo: pull toggl entries for more than one year if in jira we have more time
-                                        $
-                                            .when(issueWorklogTask)
-                                            .fail(deferred.reject)
-                                            .done(function(jiraTime) {
-
-                                                const item = new SyncItem(
-                                                    togglLog.task,
-                                                    issue.fields.summary,
-                                                    oneYearTogglTime.time,
-                                                    jiraTime,
-                                                    settings.toggl.useTimeEntryTitleAsComment
-                                                        ? togglLog.comments
-                                                        : null);
-
-                                                taskLog.push(item);
-
-                                                if(taskLog.length === issues.length) {
-                                                    deferred.resolve(taskLog);
-                                                }
-                                            });
-
-                                    }, settings.toggl.syncApiCall ? 200 * i : 0);
-                                });
+                        .done(oneYearSummary => {
+                            const tasks = _(summary).pluck('task');
+                            jiraService
+                                .getIssuesAsync(tasks)
+                                .fail(deferred.reject)
+                                .done(issues => this.processIssues(summary, oneYearSummary, issues, taskLog, deferred));
                         });
                 });
 
             return deferred.promise();
+        },
+        processIssues(summary, oneYearSummary, issues, taskLog, deferred) {
+            _(issues)
+                .each(function(issue, i) {
+                    setTimeout(function() {
+                        const togglLog = _(summary).find(function(task) {
+                            return issue.key === task.task;
+                        });
+
+                        const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
+                        const oneYearTogglTime = oneYearSummary.find(t => t.task == issue.key);
+
+                        // todo: pull toggl entries for more than one year if in jira we have more time
+                        $
+                            .when(issueWorklogTask)
+                            .fail(deferred.reject)
+                            .done(function(jiraTime) {
+
+                                const item = new SyncItem(
+                                    togglLog.task,
+                                    issue.fields.summary,
+                                    oneYearTogglTime.time,
+                                    jiraTime,
+                                    settings.toggl.useTimeEntryTitleAsComment
+                                        ? togglLog.comments
+                                        : null);
+
+                                taskLog.push(item);
+
+                                if(taskLog.length === issues.length) {
+                                    deferred.resolve(taskLog);
+                                }
+                            });
+
+                    }, settings.toggl.syncApiCall ? 200 * i : 0);
+                });
         },
         syncAsync: function(itemToSync) {
             if(!(itemToSync.timeSpentSeconds > 0))
