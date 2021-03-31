@@ -22,6 +22,7 @@ define([
             this.$togglApiToken = this.$('#togglApiToken');
             this.$duration = this.$('#duration');
             this.$syncApiCall = this.$('#syncApiCall');
+            this.$useTimeEntryTitleAsComment = this.$('#useTimeEntryTitleAsComment');
 
             this.render();
         },
@@ -37,6 +38,7 @@ define([
             this.$togglApiToken.val(togglSettings.apiToken);
             this.$duration.val(settings.reportingRange.asDays());
             this.$syncApiCall.attr('checked', settings.toggl.syncApiCall ? 'checked' : null);
+            this.$useTimeEntryTitleAsComment.attr('checked', settings.toggl.useTimeEntryTitleAsComment ? 'checked' : null);
         },
         onSave: function() {
             const jiraSettings = {
@@ -49,7 +51,8 @@ define([
             const togglSettings = {
                 workspace: this.$togglWorkspace.val(),
                 apiToken: this.$togglApiToken.val(),
-                syncApiCall: this.$syncApiCall.is(':checked')
+                syncApiCall: this.$syncApiCall.is(':checked'),
+                useTimeEntryTitleAsComment: true
             };
 
             settings.jira = jiraSettings;
