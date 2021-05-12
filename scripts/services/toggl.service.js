@@ -9,27 +9,21 @@ define([
     const taskPattern = /[A-Z]+-\d+/;
 
     // https://github.com/toggl/toggl_api_docs
-    // 'Access-Control-Allow-Origin': 'chrome-extension://gcfmddogfljjdpiojcdfkgoonhafmnlb'
-
     const urls = {
-        // me: 'https://track.toggl.com/api/v8/me',
-        me: 'https://toggl.com/api/v8/me',
+        me: 'https://api.track.toggl.com/api/v8/me',
         summary: 'https://api.track.toggl.com/reports/api/v2/summary',
         details: 'https://api.track.toggl.com/reports/api/v2/details'
     };
 
-    let headers = {};
+    let headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(settings.toggl.apiToken + ':api_token')
+    };
     const deferred = new $.Deferred();
 
     return {
-        settings: settings.toggl,
         getSettingsAsync: function() {
             if(deferred.state() != "resolved") {
-                headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Basic ' + btoa(settings.toggl.apiToken + ':api_token')
-                };
-
                 $
                     .ajax({
                         url: urls.me,
@@ -44,12 +38,12 @@ define([
                                 return ws.name === settings.toggl.workspace;
                             });
 
-                        settings.workspaceId = workspace.id;
-                        settings.userId = response.data.id;
+                        // settings.workspaceId = workspace.id;
+                        // settings.userId = response.data.id;
 
                         deferred.resolve({
-                            workspaceId: settings.workspaceId,
-                            userId: settings.userId
+                            workspaceId: workspace.id,
+                            userId: response.data.id
                         });
                     });
             }

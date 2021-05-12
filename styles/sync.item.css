@@ -16,7 +16,7 @@
 .general-popup__container {
     position: fixed;
     z-index: 1;
-    top: 30%;
+    top: calc(50% - 120px);
     right: 0;
     left: 0;
     overflow: hidden;

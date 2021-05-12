@@ -62,10 +62,6 @@ define([
             require(['sync.service'], function(syncService) {
                 syncService.updateUnsyncedTaskCount();
             });
-
-            this.showMessage('Settings saved.');
-        },
-        showMessage: function(message) {
         }
     });
 });
