@@ -59,8 +59,14 @@ define([
             settings.toggl = togglSettings;
             settings.reportingRange = this.$duration.val();
 
-            require(['sync.service'], function(syncService) {
-                syncService.updateUnsyncedTaskCount();
+            require(['toggl.service', 'sync.service'], function(togglService, syncService) {
+                togglService
+                    .saveUserSettingsAsync()
+                    .fail((hxr, status, error) => {
+                        chrome.browserAction.setBadgeText({text: error || "error"});
+                        chrome.browserAction.setBadgeBackgroundColor({color: "black"});
+                    })
+                    .done(() => syncService.updateUnsyncedTaskCount());
             });
         }
     });

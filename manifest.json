@@ -23,8 +23,6 @@
         "alarms",
         "storage",
         "https://*.atlassian.net/*",
-        "https://www.toggl.com/*",
-        "https://toggl.com/*",
         "https://api.track.toggl.com/*"
     ]
 }
