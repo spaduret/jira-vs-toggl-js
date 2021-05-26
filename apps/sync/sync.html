@@ -34,9 +34,7 @@
             z-index: 1;
         }
 
-        #info.dataTables_info {
-            clear: unset;
-            white-space: pre;
+        #info {
             font-weight: bold;
             color: darkblue;
         }
@@ -57,12 +55,21 @@
                 transform: rotate(360deg);
             }
         }
+
+        .task-description {
+            overflow-x: hidden;
+            max-width: 300px;
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
     </style>
 </head>
 
-<body style="width: 670px">
+<body style="min-width: 500px; max-width: 1100px">
 <div>
-    <div style="margin: 5px 10px 5px 5px; width: 100%">
+    <div style="width: 100%">
         <table id="workLog" class="display"></table>
     </div>
 </div>

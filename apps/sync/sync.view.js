@@ -49,32 +49,34 @@ define([
                             {
                                 title: 'Task',
                                 data: 'taskName',
-                                className: 'dt-center',
-                                render: view.renderTask,
-                                width: '80px'
+                                className: 'dt-center no-wrap',
+                                render: view.renderTask
                             },
-                            {title: 'Description', data: 'taskDescription', orderable: false},
+                            {
+                                title: 'Description',
+                                data: 'taskDescription',
+                                className: "task-description",
+                                orderable: false
+                            },
                             {
                                 title: 'Toggl',
                                 data: null,
                                 render: view.renderTogglTime,
-                                className: 'dt-center',
-                                searchable: false,
-                                width: '50px'
+                                className: 'dt-center no-wrap',
+                                searchable: false
                             },
                             {
                                 title: 'Jira',
                                 data: 'jiraTime',
                                 render: view.renderTime,
-                                className: 'dt-center',
-                                searchable: false,
-                                width: '50px'
+                                className: 'dt-center no-wrap',
+                                searchable: false
                             },
                             {
                                 title: 'Mismatch',
                                 data: 'unsynced',
                                 render: view.renderMismatchTime,
-                                className: 'dt-center',
+                                className: 'dt-center no-wrap',
                                 searchable: false
                             },
                             {
