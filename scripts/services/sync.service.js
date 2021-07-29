@@ -47,31 +47,36 @@ define([
                             return issue.key === task.task;
                         });
 
-                        const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
-                        const oneYearTogglTime = oneYearSummary.find(t => t.task == issue.key);
+                        if(!togglLog) {
+                            // can be null if task was moved to another board after a toggl entry was added
+                            alert('toggl entry for ' + issue.key + ' can\'t be found');
+                            return;
+                        } else {
+                            const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
+                            const oneYearTogglTime = oneYearSummary.find(t => t.task == issue.key);
 
-                        // todo: pull toggl entries for more than one year if in jira we have more time
-                        $
-                            .when(issueWorklogTask)
-                            .fail(deferred.reject)
-                            .done(function(jiraTime) {
+                            // todo: pull toggl entries for more than one year if in jira we have more time
+                            $
+                                .when(issueWorklogTask)
+                                .fail(deferred.reject)
+                                .done(function(jiraTime) {
 
-                                const item = new SyncItem(
-                                    togglLog.task,
-                                    issue.fields.summary,
-                                    oneYearTogglTime.time,
-                                    jiraTime,
-                                    settings.toggl.useTimeEntryTitleAsComment
-                                        ? togglLog.comments
-                                        : null);
+                                    const item = new SyncItem(
+                                        togglLog.task,
+                                        issue.fields.summary,
+                                        oneYearTogglTime.time,
+                                        jiraTime,
+                                        settings.toggl.useTimeEntryTitleAsComment
+                                            ? togglLog.comments
+                                            : null);
 
-                                taskLog.push(item);
+                                    taskLog.push(item);
 
-                                if(taskLog.length === issues.length) {
-                                    deferred.resolve(taskLog);
-                                }
-                            });
-
+                                    if(taskLog.length === issues.length) {
+                                        deferred.resolve(taskLog);
+                                    }
+                                });
+                        }
                     }, settings.toggl.syncApiCall ? 200 * i : 0);
                 });
         },
