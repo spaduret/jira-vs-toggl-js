@@ -1,5 +1,5 @@
 define(["settings", 'moment'], function (settings) {
-    return function (taskName, taskDescription, togglTime, jiraTime, comment) {
+    return function (taskName, taskDescription, togglTime, jiraTime, comment, error) {
         return {
             taskName: taskName || null,
             taskUrl: settings.jira.server + '/browse/' + taskName,
@@ -12,7 +12,8 @@ define(["settings", 'moment'], function (settings) {
             set unsynced(value) {
                 throw new Error('\'unsynced\' is readonly property')
             },
-            comment: comment
+            comment: comment,
+            error: error
         };
     };
 });

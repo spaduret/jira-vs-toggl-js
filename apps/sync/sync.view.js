@@ -54,8 +54,9 @@ define([
                             },
                             {
                                 title: 'Description',
-                                data: 'taskDescription',
+                                data: null,
                                 className: "task-description",
+                                render: view.renderDescription,
                                 orderable: false
                             },
                             {
@@ -144,6 +145,12 @@ define([
         renderTask: function(data, type, row) {
             return `<a href="${row.taskUrl}" target="_blank">${data}</a>`;
         },
+        renderDescription: function(data, type, row) {
+            if(data.error)
+                return `<span style="color: darkred; font-weight: bold;">${data.taskDescription}</span>`;
+
+            return data.taskDescription;
+        },
         renderOptions: function(data, type, row, meta) {
             if(Math.abs(row.unsynced) <= settings.timeToIgnoreSeconds)
                 return null;
@@ -155,6 +162,10 @@ define([
                 'data-row': meta.row,
                 'data-role': 'sync'
             });
+
+            if(row.error) {
+                $button.css({color: '#FF0000'});
+            }
 
             // show RED if jira has more logged work
             if(row.unsynced < -settings.timeToIgnoreSeconds) {
