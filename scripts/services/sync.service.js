@@ -39,44 +39,77 @@ define([
 
             return deferred.promise();
         },
-        processIssues(summary, oneYearSummary, issues, taskLog, deferred) {
-            _(issues)
-                .each(function(issue, i) {
+        processIssues(togglSummary, oneYearSummary, issues, taskLog, deferred) {
+            _(togglSummary)
+                .each((togglEntry, i) => {
                     setTimeout(function() {
-                        const togglLog = _(summary).find(function(task) {
-                            return issue.key === task.task;
+                        let hasError = false;
+
+                        const jiraTask = _(issues).find(function(issue) {
+                            return togglEntry.task === issue.key;
                         });
 
-                        if(!togglLog) {
+                        // if(!jiraTask) {
+                        //     // can be null if task was moved to another board after a toggl entry was added
+                        //
+                        //     // pull jira tasks that are not in the toggl
+                        //     let missingTasks = issues.filter(i => !togglSummary.some(t => t.task === i.key));
+                        //     if(missingTasks.length) {
+                        //         console.debug('missing tasks:', missingTasks);
+                        //     }
+                        //
+                        //     const item = new SyncItem(
+                        //         togglEntry.task,
+                        //         'TASK NOT FOUND',
+                        //         null,
+                        //         null,
+                        //         settings.toggl.useTimeEntryTitleAsComment
+                        //             ? togglLog.comments
+                        //             : null,
+                        //         'JIRA_NOT_FOUND'
+                        //         );
+                        //
+                        //     taskLog.push(item);
+                        //     if(taskLog.length === issues.length) {
+                        //         deferred.resolve(taskLog);
+                        //     }
+                        // } else {
+
+                        if(!jiraTask)
+                        {
                             // can be null if task was moved to another board after a toggl entry was added
-                            alert('toggl entry for ' + issue.key + ' can\'t be found');
-                            return;
-                        } else {
-                            const issueWorklogTask = jiraService.getIssueWorklogAsync(issue.key);
-                            const oneYearTogglTime = oneYearSummary.find(t => t.task == issue.key);
-
-                            // todo: pull toggl entries for more than one year if in jira we have more time
-                            $
-                                .when(issueWorklogTask)
-                                .fail(deferred.reject)
-                                .done(function(jiraTime) {
-
-                                    const item = new SyncItem(
-                                        togglLog.task,
-                                        issue.fields.summary,
-                                        oneYearTogglTime.time,
-                                        jiraTime,
-                                        settings.toggl.useTimeEntryTitleAsComment
-                                            ? togglLog.comments
-                                            : null);
-
-                                    taskLog.push(item);
-
-                                    if(taskLog.length === issues.length) {
-                                        deferred.resolve(taskLog);
-                                    }
-                                });
+                            // but JQL still works because JIRA knows about migration
+                            // todo: this might not work if task was removed in JIRA
+                            hasError = true;
                         }
+
+                        // todo: this will fail most likely if task was removed in JIRA
+                        const issueWorklogTask = jiraService.getIssueWorklogAsync(togglEntry.task);
+                        const oneYearTogglTime = oneYearSummary.find(t => t.task === togglEntry.task);
+
+                        // todo: pull toggl entries for more than one year if in jira we have more time
+                        $
+                            .when(issueWorklogTask)
+                            .fail(deferred.reject)
+                            .done(function(jiraTime) {
+
+                                const item = new SyncItem(
+                                    togglEntry.task,
+                                    jiraTask ? jiraTask.fields.summary : ('task ' + togglEntry.task + ' not found'),
+                                    oneYearTogglTime.time,
+                                    jiraTime,
+                                    settings.toggl.useTimeEntryTitleAsComment
+                                        ? togglLog.comments
+                                        : null,
+                                    hasError);
+
+                                taskLog.push(item);
+
+                                if(taskLog.length === issues.length) {
+                                    deferred.resolve(taskLog);
+                                }
+                            });
+                        // }
                     }, settings.toggl.syncApiCall ? 200 * i : 0);
                 });
         },
