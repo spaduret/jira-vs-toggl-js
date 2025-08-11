@@ -12,13 +12,11 @@ define([
             'click #save': 'onSave'
         },
         initialize: function() {
-
             this.$jiraServer = this.$('#jiraServer');
             this.$jiraEmail = this.$('#jiraEmail');
             this.$jiraUsername = this.$("#jiraUsername");
             this.$jiraApiToken = this.$('#jiraApiToken');
 
-            this.$togglWorkspace = this.$('#togglWorkspace');
             this.$togglApiToken = this.$('#togglApiToken');
             this.$duration = this.$('#duration');
             this.$syncApiCall = this.$('#syncApiCall');
@@ -34,7 +32,6 @@ define([
             this.$jiraApiToken.val(jiraSettings.apiToken);
 
             const togglSettings = settings.toggl || {};
-            this.$togglWorkspace.val(togglSettings.workspace);
             this.$togglApiToken.val(togglSettings.apiToken);
             this.$duration.val(settings.reportingRange.asDays());
             this.$syncApiCall.attr('checked', settings.toggl.syncApiCall ? 'checked' : null);
@@ -49,7 +46,6 @@ define([
             };
 
             const togglSettings = {
-                workspace: this.$togglWorkspace.val(),
                 apiToken: this.$togglApiToken.val(),
                 syncApiCall: this.$syncApiCall.is(':checked'),
                 useTimeEntryTitleAsComment: this.$useTimeEntryTitleAsComment.is(':checked')
@@ -63,8 +59,8 @@ define([
                 togglService
                     .saveUserSettingsAsync()
                     .fail((hxr, status, error) => {
-                        chrome.browserAction.setBadgeText({text: error || "error"});
-                        chrome.browserAction.setBadgeBackgroundColor({color: "black"});
+                        chrome.action.setBadgeText({text: error || "error"});
+                        chrome.action.setBadgeBackgroundColor({color: "black"});
                     })
                     .done(() => syncService.updateUnsyncedTaskCount());
             });

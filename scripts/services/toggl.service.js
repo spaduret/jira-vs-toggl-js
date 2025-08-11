@@ -10,7 +10,7 @@ define([
 
     // https://github.com/toggl/toggl_api_docs
     const urls = {
-        me: 'https://api.track.toggl.com/api/v8/me',
+        me: 'https://api.track.toggl.com/api/v9/me',
         summary: 'https://api.track.toggl.com/reports/api/v2/summary',
         details: 'https://api.track.toggl.com/reports/api/v2/details'
     };
@@ -30,14 +30,9 @@ define([
                     async: true
                 })
                 .then(function(response) {
-                    const workspace = _(response.data.workspaces)
-                        .find(function(ws) {
-                            return ws.name === settings.toggl.workspace;
-                        });
-
                     let togglSettings = settings.toggl;
-                    togglSettings.workspaceId = workspace.id;
-                    togglSettings.userId = response.data.id;
+                    togglSettings.workspaceId = response.default_workspace_id;
+                    togglSettings.userId = response.id;
                     settings.toggl = togglSettings
 
                     return togglSettings;

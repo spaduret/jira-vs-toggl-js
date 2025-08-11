@@ -30,8 +30,8 @@ define([
                 .getWorkLogAsync()
                 .fail(function(xhr, status, error) {
                     alert(xhr.responseText);
-                    chrome.browserAction.setBadgeText({text: '*' + xhr.status});
-                    chrome.browserAction.setBadgeBackgroundColor({color: "black"});
+                    chrome.action.setBadgeText({text: '*' + xhr.status});
+                    chrome.action.setBadgeBackgroundColor({color: "black"});
                 })
                 .done(function(workLog) {
                     view.workLog = workLog;

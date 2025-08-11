@@ -129,8 +129,8 @@ define([
                 view
                     .getWorkLogAsync()
                     .fail(function(xhr, status, error) {
-                        chrome.browserAction.setBadgeText({text: '*' + xhr.status});
-                        chrome.browserAction.setBadgeBackgroundColor({color: "black"});
+                        chrome.action.setBadgeText({text: '*' + xhr.status});
+                        chrome.action.setBadgeBackgroundColor({color: "black"});
                     })
                     .done(function(log) {
                         const count = _(log).filter((w) => w.unsynced > settings.timeToIgnoreSeconds).length;
@@ -148,11 +148,11 @@ define([
         },
         setBadgeText: function(count, badgeColor) {
             if(count > 0) {
-                chrome.browserAction.setBadgeText({text: count.toString()});
-                chrome.browserAction.setBadgeBackgroundColor({color: badgeColor || "red"});
+                chrome.action.setBadgeText({text: count.toString()});
+                chrome.action.setBadgeBackgroundColor({color: badgeColor || "red"});
             } else {
-                chrome.browserAction.setBadgeText({text: '0'});
-                chrome.browserAction.setBadgeBackgroundColor({color: badgeColor || "green"});
+                chrome.action.setBadgeText({text: '0'});
+                chrome.action.setBadgeBackgroundColor({color: badgeColor || "green"});
             }
 
             console.log('setBadgeText: ' + count);
