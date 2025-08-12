@@ -99,7 +99,7 @@ define([
                     .fail((xhr) => alert(xhr.responseText))
                     .then(() => jiraService.getIssueWorklogAsync(issue.taskName))
                     .done(function (jiraTime) {
-                        if (jiraTime < 0) {
+                        if (jiraTime) {
                             //log trace info
                             console.log({
                                 task: issue.taskName,
