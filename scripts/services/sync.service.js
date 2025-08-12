@@ -22,10 +22,12 @@ define([
             const deferred = new $.Deferred();
 
             togglService
+                // get tasks tracked in the last X days
                 .getSummaryAsync(period, settings.toggl.useTimeEntryTitleAsComment)
                 .fail(deferred.reject)
                 .done(summary => {
                     togglService
+                        // get tasks tracked in the last year to get the "total" time for each task
                         .getSummaryAsync(periodExt, false)
                         .fail(deferred.reject)
                         .done(oneYearSummary => {
@@ -48,32 +50,6 @@ define([
                         const jiraTask = _(issues).find(function(issue) {
                             return togglEntry.task === issue.key;
                         });
-
-                        // if(!jiraTask) {
-                        //     // can be null if task was moved to another board after a toggl entry was added
-                        //
-                        //     // pull jira tasks that are not in the toggl
-                        //     let missingTasks = issues.filter(i => !togglSummary.some(t => t.task === i.key));
-                        //     if(missingTasks.length) {
-                        //         console.debug('missing tasks:', missingTasks);
-                        //     }
-                        //
-                        //     const item = new SyncItem(
-                        //         togglEntry.task,
-                        //         'TASK NOT FOUND',
-                        //         null,
-                        //         null,
-                        //         settings.toggl.useTimeEntryTitleAsComment
-                        //             ? togglLog.comments
-                        //             : null,
-                        //         'JIRA_NOT_FOUND'
-                        //         );
-                        //
-                        //     taskLog.push(item);
-                        //     if(taskLog.length === issues.length) {
-                        //         deferred.resolve(taskLog);
-                        //     }
-                        // } else {
 
                         if(!jiraTask)
                         {
@@ -110,7 +86,7 @@ define([
                                 }
                             });
                         // }
-                    }, settings.toggl.syncApiCall ? 200 * i : 0);
+                    }, settings.jira.syncApiCall ? 200 * i : 0);
                 });
         },
         syncAsync: function(itemToSync) {

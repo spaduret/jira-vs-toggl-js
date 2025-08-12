@@ -74,7 +74,7 @@
 }
 
 .error {
-    border-color: #c21a1a;
+    color: darkred;
 }
 
 .mismatch {

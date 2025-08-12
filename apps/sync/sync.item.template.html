@@ -6,13 +6,13 @@
             <div class="general-popup__close" data-role="close"></div>
         </header>
         <section class="general-popup__body scrollwrapper">
-            <label>Task: <input type="text" data-role="logTask" style="width: 80px;" disabled="disabled"/> </label>
-            <label>Time: <input type="text" data-role="logTime" style="width: 90px;" required title="Time spent in hours only"/> </label>
-            <label>Date: <input type="date" data-role="logDate" style="width: 150px;" required/> </label>
+            <label>Task: <input type="text" data-role="logTask" style="width: 100px;" disabled="disabled"/> </label>
+            <label>Time: <input type="text" data-role="logTime" style="width: 100px;" required title="Time spent in hours only"/> </label>
+            <label>Date: <input type="date" data-role="logDate" style="width: 120px;" required/> </label>
             <textarea data-role="comment" placeholder="add a comment" style="width: 448px;" rows="5" maxlength="255"></textarea>
-            <div style="margin-top: 10px; float: right;">
+            <div style="margin-top: 10px; width: 100%; float: right">
+                <span data-role="error" class="error" style="display: none">An error occurred</span>
                 <button data-role="sync-item">Sync</button>
-                <button data-role="close">Cancel</button>
             </div>
         </section>
     </div>

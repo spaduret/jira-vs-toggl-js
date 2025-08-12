@@ -87,28 +87,6 @@ define([
                         })
                         .value();
                 });
-        },
-        // get all time entries for the last 365 days
-        getTotalLoggedTimeByTitleAsync: function(title) {
-            const params = {
-                user_agent: 'jira',
-                workspace_id: settings.toggl.workspaceId,
-                user_ids: settings.toggl.userId,
-                description: title,
-                since: moment().add(-365, 'd').format('YYYY-MM-DD'),
-                until: moment().format('YYYY-MM-DD')
-            };
-
-            return $
-                .ajax({
-                    url: urls.details + '?' + $.param(params),
-                    headers: headers,
-                    type: 'GET',
-                    async: true
-                })
-                .then(function(response) {
-                    return Math.round(response.total_grand / 1000);
-                });
         }
     };
 });

@@ -15,25 +15,42 @@ define([
         'Authorization': 'Basic ' + authToken
     };
 
-    // getting Jira Base URL
-    let jiraBaseUrl = settings.jira.server;
-    if (!jiraBaseUrl)
-        throw new Error('Not found Jira Server URL configuration.');
-    if (jiraBaseUrl[jiraBaseUrl.length - 1] === '/') {
-        jiraBaseUrl = jiraBaseUrl.substr(0, jiraBaseUrl.length - 1);
-    }
-    const apiVersion = '2';
-    const urls = {
-        mypermissions: jiraBaseUrl + '/rest/api/' + apiVersion + '/mypermissions',
-        issue: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/',
-        logWork: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog',
-        issues: jiraBaseUrl + '/rest/api/' + apiVersion + '/search?jql={0}&fields=id,key,summary&maxResults=100',
-        fields: jiraBaseUrl + '/rest/api/' + apiVersion + '/field',
-        worklog: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog'
-    };
-
     return {
-        settings: settings.jira,
+        urls: function() {
+            // getting Jira Base URL
+            let jiraBaseUrl = settings.jira.server;
+            if (!jiraBaseUrl)
+                throw new Error('Not found Jira Server URL configuration.');
+            if (jiraBaseUrl[jiraBaseUrl.length - 1] === '/') {
+                jiraBaseUrl = jiraBaseUrl.substr(0, jiraBaseUrl.length - 1);
+            }
+
+            const apiVersion = '2';
+            return {
+                myself: jiraBaseUrl + '/rest/api/' + apiVersion + '/myself',
+                issue: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/',
+                logWork: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog',
+                issues: jiraBaseUrl + '/rest/api/' + apiVersion + '/search?jql={0}&fields=id,key,summary&maxResults=100',
+                fields: jiraBaseUrl + '/rest/api/' + apiVersion + '/field',
+                worklog: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog'
+            };
+        },
+        saveUserSettingsAsync: function() {
+            return $
+                .ajax({
+                    url: this.urls().myself,
+                    headers: headers,
+                    type: 'GET',
+                    async: true
+                })
+                .then(function(response) {
+                    let jiraSettings = settings.jira;
+                    jiraSettings.email = response.emailAddress;
+                    settings.jira = jiraSettings
+
+                    return jiraSettings;
+                });
+        },
         getIssuesAsync: function(issues) {
             if(!issues.length) {
                 const deferred = new $.Deferred();
@@ -46,7 +63,7 @@ define([
             jql += issues.join("+OR+key=");
 
             return $.ajax({
-                url: urls.issues.replace('{0}', jql),
+                url: this.urls().issues.replace('{0}', jql),
                 headers: headers,
                 type: 'GET',
                 async: true
@@ -59,36 +76,22 @@ define([
             });
         },
         getIssueWorklogAsync: function(issueKey) {
-            const settings = this.settings;
+            const emailAddress = settings.jira.email;
 
             return $.ajax({
-                url: urls.worklog.replace('{0}', issueKey),
+                url: this.urls().worklog.replace('{0}', issueKey),
                 headers: headers,
                 type: 'GET',
                 async: true
             }).then(function(response) {
                 return _(response.worklogs)
-                    .filter((w) => w.author.emailAddress === settings.email)
+                    .filter((w) => w.author.emailAddress === emailAddress)
                     .reduce((memo, log) => memo + log.timeSpentSeconds, 0);
             });
         },
-        getFields: function() {
-            let result = null;
-
-            $.ajax({
-                url: urls.fields,
-                headers: headers,
-                type: 'GET',
-                async: true
-            }).done(function(response) {
-                result = response;
-            });
-
-            return result;
-        },
         logWorkAsync: function(issue) {
             return $.ajax({
-                url: urls.logWork.replace('{0}', issue.taskName),
+                url: this.urls().logWork.replace('{0}', issue.taskName),
                 headers: headers,
                 type: 'POST',
                 dataType: 'JSON',

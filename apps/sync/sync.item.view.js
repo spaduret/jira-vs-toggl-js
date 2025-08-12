@@ -9,7 +9,7 @@ define([
 
     'text!../apps/sync/sync.item.template.html',
     'text!../apps/sync/sync.multiple.items.template.html',
-], function(
+], function (
     $,
     _,
     backbone,
@@ -17,25 +17,24 @@ define([
     syncService,
     jiraService,
     settings,
-
     template,
     multipleTemplate) {
     return backbone.View.extend({
         events: {
             'click [data-role=close]': 'delete',
-            'click [data-role=cancel]': 'delete',
             'click [data-role=sync-item]': 'sync',
             'click [data-role=sync-all-items]': 'syncAll'
         },
-        initialize: function(options) {
+        initialize: function (options) {
             this.options = options;
             this.render();
         },
-        render: function() {
-            if(this.options.multi)
+        render: function () {
+            if (this.options.multi)
                 this.$el.html(multipleTemplate);
             else
                 this.$el.html(template);
+
             $('body').append(this.$el);
 
             this.$logDate = this.$('[data-role=logDate]');
@@ -43,7 +42,7 @@ define([
             this.$comment = this.$('[data-role=comment]');
             this.$logDate.val(moment().format('YYYY-MM-DD'));
 
-            if(!this.options.multi) {
+            if (!this.options.multi) {
                 this.$logTask = this.$('[data-role=logTask]');
                 this.$logTask.val(this.model.taskName);
                 this.$comment.val(this.model.comment);
@@ -51,7 +50,7 @@ define([
                 this.$logTime.val(`${toLog.hours()}h ${toLog.minutes()}m ${toLog.seconds()}s`);
             }
         },
-        validate: function() {
+        validate: function () {
             const isValidDate = moment(this.$logDate.val()).isValid();
             const isValidTime = this.options.multi || moment.duration(parseFloat(this.$logTime.val()), 'hour').isValid();
             const isValidComment = _.isBetween(this.$comment.val().length, 0, 255);
@@ -62,7 +61,7 @@ define([
 
             return isValidComment && isValidDate && isValidTime;
         },
-        parseTime: function(time) {
+        parseTime: function (time) {
             const duration = moment.duration();
             _(time.split(' '))
                 .each((t) => {
@@ -71,18 +70,18 @@ define([
                     duration.add(parseInt(timeValue), dur);
                 });
 
-            if(duration.isValid() && duration.asSeconds() > 0)
+            if (duration.isValid() && duration.asSeconds() > 0)
                 return duration;
 
             return null;
         },
-        sync: function() {
+        sync: function () {
             const view = this;
             const isValid = view.validate();
-            if(isValid) {
+            if (isValid) {
                 const toLog = view.$logTime.val();
                 const duration = this.parseTime(toLog);
-                if(!duration) {
+                if (!duration) {
                     alert('Bad time format');
                     return;
                 }
@@ -99,8 +98,8 @@ define([
                     .syncAsync(issue)
                     .fail((xhr) => alert(xhr.responseText))
                     .then(() => jiraService.getIssueWorklogAsync(issue.taskName))
-                    .done(function(jiraTime) {
-                        if(jiraTime) {
+                    .done(function (jiraTime) {
+                        if (jiraTime < 0) {
                             //log trace info
                             console.log({
                                 task: issue.taskName,
@@ -122,23 +121,24 @@ define([
                             view.delete();
 
                             const unSyncedCount = _(view.options.table.data())
-                                .filter(function(row) {
+                                .filter(function (row) {
                                     return Math.abs(row.unsynced) >= settings.timeToIgnoreSeconds;
                                 })
                                 .length;
 
                             syncService.updateUnsyncedTaskCount(unSyncedCount);
                         } else {
-                            // todo: show error
-                            view.$el.toggleClass('error', true);
+                            view.loading(false);
+                            view.$('[data-role=error]').html(`Failed to sync time for task ${issue.taskName}`);
+                            view.$('[data-role=error]').show();
                         }
                     });
             }
         },
-        syncAll: function() {
+        syncAll: function () {
             const view = this;
             const isValid = view.validate();
-            if(isValid) {
+            if (isValid) {
                 let synced = [];
                 const deferred = new $.Deferred();
 
@@ -167,7 +167,7 @@ define([
                             .fail((xhr) => deferred.reject(xhr.responseText))
                             .then(() => jiraService.getIssueWorklogAsync(syncItem.taskName))
                             .then((jiraTime) => {
-                                if(jiraTime) {
+                                if (jiraTime) {
                                     //log trace info
                                     console.log({
                                         task: syncItem.taskName,
@@ -180,7 +180,7 @@ define([
 
                                     task.jiraTime = jiraTime;
                                     synced.push(task);
-                                    if(synced.length === itemsToSync.length)
+                                    if (synced.length === itemsToSync.length)
                                         deferred.resolve(synced);
                                 } else
                                     deferred.reject(`failed to sync time for task ${task.taskName}`);
@@ -206,7 +206,7 @@ define([
 
                         // should be 0
                         const unSyncedCount = _(view.options.table.data())
-                            .filter(function(row) {
+                            .filter(function (row) {
                                 return Math.abs(row.unsynced) >= settings.timeToIgnoreSeconds;
                             })
                             .length;
@@ -215,12 +215,20 @@ define([
                     });
             }
         },
-        loading: function() {
-            this.$el.find('.general-popup__container')
-                .addClass('g-loading')
-                .append('<a data-role="g-loading"></a>');
+        loading: function (show = true) {
+            let popup = this.$el.find('.general-popup__container');
+
+            if (show)
+                popup
+                    .addClass('g-loading')
+                    .append('<a data-role="g-loading"></a>');
+            else
+                popup
+                    .toggleClass('g-loading', false)
+                    .find('[data-role=g-loading]')
+                    .remove();
         },
-        delete: function() {
+        delete: function () {
             this.$el.remove();
         }
     });

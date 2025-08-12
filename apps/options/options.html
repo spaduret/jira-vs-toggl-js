@@ -28,14 +28,6 @@
                     <td><input id="jiraServer" placeholder="https://<your company>.atlassian.net/" size="35"></td>
                 </tr>
                 <tr>
-                    <td>Email address</td>
-                    <td><input id="jiraEmail" placeholder="email" size="35"></td>
-                </tr>
-                <tr>
-                    <td>Username</td>
-                    <td><input id="jiraUsername" placeholder="username" size="35"></td>
-                </tr>
-                <tr>
                     <td>ApiToken</td>
                     <td><input id="jiraApiToken" placeholder="api token" size="35"></td>
                 </tr>
@@ -61,6 +53,7 @@
                 </tr>
             </table>
             <div style="margin-top: 10px; float: right;">
+                <span id="status" style="color: darkred; display: none"></span>
                 <button id="save">Save</button>
             </div>
         </section>

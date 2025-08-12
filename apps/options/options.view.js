@@ -4,17 +4,15 @@ define([
     'underscore',
     'backbone',
     'settings'
-], function(require, $, _, backbone, settings) {
+], function (require, $, _, backbone, settings) {
     'use strict';
     return backbone.View.extend({
         el: 'body',
         events: {
             'click #save': 'onSave'
         },
-        initialize: function() {
+        initialize: function () {
             this.$jiraServer = this.$('#jiraServer');
-            this.$jiraEmail = this.$('#jiraEmail');
-            this.$jiraUsername = this.$("#jiraUsername");
             this.$jiraApiToken = this.$('#jiraApiToken');
 
             this.$togglApiToken = this.$('#togglApiToken');
@@ -24,11 +22,9 @@ define([
 
             this.render();
         },
-        render: function() {
+        render: function () {
             const jiraSettings = settings.jira || {};
             this.$jiraServer.val(jiraSettings.server);
-            this.$jiraEmail.val(jiraSettings.email);
-            this.$jiraUsername.val(jiraSettings.username);
             this.$jiraApiToken.val(jiraSettings.apiToken);
 
             const togglSettings = settings.toggl || {};
@@ -37,17 +33,15 @@ define([
             this.$syncApiCall.attr('checked', settings.toggl.syncApiCall ? 'checked' : null);
             this.$useTimeEntryTitleAsComment.attr('checked', settings.toggl.useTimeEntryTitleAsComment ? 'checked' : null);
         },
-        onSave: function() {
+        onSave: function () {
             const jiraSettings = {
                 server: this.$jiraServer.val(),
-                email: this.$jiraEmail.val(),
-                username: this.$jiraUsername.val(),
-                apiToken: this.$jiraApiToken.val()
+                apiToken: this.$jiraApiToken.val(),
+                syncApiCall: this.$syncApiCall.is(':checked')
             };
 
             const togglSettings = {
                 apiToken: this.$togglApiToken.val(),
-                syncApiCall: this.$syncApiCall.is(':checked'),
                 useTimeEntryTitleAsComment: this.$useTimeEntryTitleAsComment.is(':checked')
             };
 
@@ -55,14 +49,29 @@ define([
             settings.toggl = togglSettings;
             settings.reportingRange = this.$duration.val();
 
-            require(['toggl.service', 'sync.service'], function(togglService, syncService) {
-                togglService
-                    .saveUserSettingsAsync()
-                    .fail((hxr, status, error) => {
-                        chrome.action.setBadgeText({text: error || "error"});
-                        chrome.action.setBadgeBackgroundColor({color: "black"});
-                    })
-                    .done(() => syncService.updateUnsyncedTaskCount());
+            let view = this;
+            require(['toggl.service', 'jira.service', 'sync.service'], function (togglService, jiraService, syncService) {
+                try {
+                    $
+                        .when(
+                            jiraService.saveUserSettingsAsync(),
+                            togglService.saveUserSettingsAsync())
+                        .fail((hxr, status, error) => {
+                            chrome.action.setBadgeText({text: error || "error"});
+                            chrome.action.setBadgeBackgroundColor({color: "black"});
+
+                            view.$('#status').show();
+                            view.$('#status').html('Error, see network console for details');
+                        })
+                        .done(() => {
+                            view.$('#status').hide();
+                            syncService.updateUnsyncedTaskCount();
+                        });
+                } catch (e) {
+                    console.error(e);
+                    view.$('#status').show();
+                    view.$('#status').html(e.message ?? 'Error, see network console for details');
+                }
             });
         }
     });
