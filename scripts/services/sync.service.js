@@ -42,6 +42,11 @@ define([
             return deferred.promise();
         },
         processIssues(togglSummary, oneYearSummary, issues, taskLog, deferred) {
+            if(togglSummary.length == 0){
+                deferred.resolve(taskLog);
+                return;
+            }
+
             _(togglSummary)
                 .each((togglEntry, i) => {
                     setTimeout(function() {
