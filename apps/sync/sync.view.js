@@ -26,6 +26,7 @@ define([
         },
         render: function() {
             const view = this;
+            view.loading();
             syncService
                 .getWorkLogAsync()
                 .fail(function(xhr, status, error) {
@@ -49,42 +50,42 @@ define([
                             {
                                 title: 'Task',
                                 data: 'taskName',
-                                className: 'dt-center no-wrap',
-                                render: view.renderTask
-                            },
-                            {
-                                title: 'Description',
-                                data: null,
-                                className: "task-description",
-                                render: view.renderDescription,
-                                orderable: false
-                            },
-                            {
-                                title: 'Toggl',
-                                data: null,
-                                render: view.renderTogglTime,
-                                className: 'dt-center no-wrap',
-                                searchable: false
-                            },
-                            {
-                                title: 'Jira',
-                                data: 'jiraTime',
-                                render: view.renderTime,
-                                className: 'dt-center no-wrap',
-                                searchable: false
-                            },
-                            {
-                                title: 'Mismatch',
-                                data: 'unsynced',
-                                render: view.renderMismatchTime,
-                                className: 'dt-center no-wrap',
-                                searchable: false
-                            },
-                            {
-                                title: 'Sync',
-                                data: 'taskName',
-                                render: view.renderOptions,
-                                className: 'dt-center',
+                    className: 'dt-center no-wrap',
+                    render: view.renderTask
+                },
+                {
+                    title: 'Description',
+                    data: null,
+                    className: "task-description",
+                    render: view.renderDescription,
+                    orderable: false
+                },
+                {
+                    title: 'Toggl',
+                    data: null,
+                    render: view.renderTogglTime,
+                    className: 'dt-center no-wrap',
+                    searchable: false
+                },
+                {
+                    title: 'Jira',
+                    data: 'jiraTime',
+                    render: view.renderTime,
+                    className: 'dt-center no-wrap',
+                    searchable: false
+                },
+                {
+                    title: 'Mismatch',
+                    data: 'unsynced',
+                    render: view.renderMismatchTime,
+                    className: 'dt-center no-wrap',
+                    searchable: false
+                },
+                {
+                    title: 'Sync',
+                    data: 'taskName',
+                    render: view.renderOptions,
+                    className: 'dt-center',
                                 orderable: false,
                                 searchable: false
                             }
@@ -95,13 +96,28 @@ define([
                             view.$el.find('#sync-all').toggle(hasItemsToSync);
                         }
                     });
+
                     view.$el.find('#info').html(`work log summary for the last <b>${settings.reportingRange.asDays()}</b> day(s)`);
                     view.$el.find('#info').append(` <input id="sync-all" class="sync-all" style="display: none;" type="button" value="sync all ♥">`);
                     view.$el.find('#sync-all').click(() => view.syncAll());
 
                     //to show/hide 'sync-all' button
                     view.table.draw();
+                    view.loading(false);
                 });
+        },
+        loading: function (show = true) {
+            let popup = this.$el.find('#workLog');
+
+            if (show)
+                popup
+                    .addClass('g-loading')
+                    .append('<a data-role="g-loading"></a>');
+            else
+                popup
+                    .toggleClass('g-loading', false)
+                    .find('[data-role=g-loading]')
+                    .remove();
         },
         renderTime: function(data) {
             const duration = moment.duration(data || 0, 'second');
