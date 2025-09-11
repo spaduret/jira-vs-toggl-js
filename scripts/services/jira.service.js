@@ -25,14 +25,13 @@ define([
                 jiraBaseUrl = jiraBaseUrl.substr(0, jiraBaseUrl.length - 1);
             }
 
-            const apiVersion = '2';
+            const apiVersion = '3';
             return {
                 myself: jiraBaseUrl + '/rest/api/' + apiVersion + '/myself',
                 issue: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/',
-                logWork: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog',
-                issues: jiraBaseUrl + '/rest/api/' + apiVersion + '/search?jql={0}&fields=id,key,summary&maxResults=100',
+                issues: jiraBaseUrl + '/rest/api/' + apiVersion + '/search/jql?jql={0}&fields=id,key,summary&maxResults=100',
                 fields: jiraBaseUrl + '/rest/api/' + apiVersion + '/field',
-                worklog: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog'
+                worklog: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog?notifyUsers=false'
             };
         },
         saveUserSettingsAsync: function() {
@@ -91,14 +90,14 @@ define([
         },
         logWorkAsync: function(issue) {
             return $.ajax({
-                url: this.urls().logWork.replace('{0}', issue.taskName),
+                url: this.urls().worklog.replace('{0}', issue.taskName),
                 headers: headers,
                 type: 'POST',
                 dataType: 'JSON',
                 async: true,
                 data: JSON.stringify({
                     started: issue.logDate.format('YYYY-MM-DDTHH:mm:ss.SSS-1200'),
-                    comment: issue.comment,
+                    comment: issue.comment ? issue.comment : null,
                     timeSpentSeconds: Math.round(issue.timeSpentSeconds)
                 })
             });
