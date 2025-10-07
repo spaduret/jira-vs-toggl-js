@@ -80,7 +80,7 @@ define([
                                     oneYearTogglTime.time,
                                     jiraTime,
                                     settings.toggl.useTimeEntryTitleAsComment
-                                        ? togglLog.comments
+                                        ? togglEntry.comments
                                         : null,
                                     hasError);
 

@@ -3,7 +3,7 @@ define([
     'underscore',
     'moment',
     'settings'
-], function($, _, moment, settings) {
+], function ($, _, moment, settings) {
     'use strict';
 
     const authToken = btoa(settings.jira.email + ':' + settings.jira.apiToken);
@@ -16,7 +16,7 @@ define([
     };
 
     return {
-        urls: function() {
+        urls: function () {
             // getting Jira Base URL
             let jiraBaseUrl = settings.jira.server;
             if (!jiraBaseUrl)
@@ -34,7 +34,7 @@ define([
                 worklog: jiraBaseUrl + '/rest/api/' + apiVersion + '/issue/{0}/worklog?notifyUsers=false'
             };
         },
-        saveUserSettingsAsync: function() {
+        saveUserSettingsAsync: function () {
             return $
                 .ajax({
                     url: this.urls().myself,
@@ -42,7 +42,7 @@ define([
                     type: 'GET',
                     async: true
                 })
-                .then(function(response) {
+                .then(function (response) {
                     let jiraSettings = settings.jira;
                     jiraSettings.email = response.emailAddress;
                     settings.jira = jiraSettings
@@ -50,8 +50,8 @@ define([
                     return jiraSettings;
                 });
         },
-        getIssuesAsync: function(issues) {
-            if(!issues.length) {
+        getIssuesAsync: function (issues) {
+            if (!issues.length) {
                 const deferred = new $.Deferred();
                 deferred.resolve([]);
 
@@ -66,15 +66,15 @@ define([
                 headers: headers,
                 type: 'GET',
                 async: true
-            }).then(function(response) {
+            }).then(function (response) {
                 // todo: consider to pull more results if available
-                if(response.total > response.maxResults)
+                if (response.total > response.maxResults)
                     throw new Error('More jira issues available');
 
                 return response.issues;
             });
         },
-        getIssueWorklogAsync: function(issueKey) {
+        getIssueWorklogAsync: function (issueKey) {
             const emailAddress = settings.jira.email;
 
             return $.ajax({
@@ -82,13 +82,15 @@ define([
                 headers: headers,
                 type: 'GET',
                 async: true
-            }).then(function(response) {
+            }).then(function (response) {
                 return _(response.worklogs)
                     .filter((w) => w.author.emailAddress === emailAddress)
                     .reduce((memo, log) => memo + log.timeSpentSeconds, 0);
             });
         },
-        logWorkAsync: function(issue) {
+        logWorkAsync: function (issue) {
+            let view = this;
+
             return $.ajax({
                 url: this.urls().worklog.replace('{0}', issue.taskName),
                 headers: headers,
@@ -97,10 +99,30 @@ define([
                 async: true,
                 data: JSON.stringify({
                     started: issue.logDate.format('YYYY-MM-DDTHH:mm:ss.SSS-1200'),
-                    comment: issue.comment ? issue.comment : null,
+                    comment: view.buildComment(issue.comment),
                     timeSpentSeconds: Math.round(issue.timeSpentSeconds)
                 })
             });
+        },
+        buildComment: function (comment) {
+            if (!(comment && comment.length))
+                return null;
+
+            return {
+                "content": [
+                    {
+                        "content": [
+                            {
+                                "text": comment,
+                                "type": "text"
+                            }
+                        ],
+                        "type": "paragraph"
+                    }
+                ],
+                "type": "doc",
+                "version": 1
+            };
         }
     };
 });
