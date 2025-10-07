@@ -22,9 +22,10 @@ Configuration instructions:
 - Right click on the icon and click `Options`.
 - Provide all required inforamtion and click `Save`.
 
-![image](https://user-images.githubusercontent.com/6294984/113167992-ec074000-924c-11eb-9797-7d1277d5c21a.png)
+<img width="395" height="321" alt="image" src="https://github.com/user-attachments/assets/997a31f4-068d-4993-ac0e-2cd86b41eb42" />
 
 1. To generate Toggl `API Token` go to [profile](https://toggl.com/app/profile) page.
-1. To generate Jira `API Token` go to [account](https://id.atlassian.com/manage/api-tokens) page.
+2. To generate Jira `API Token` go to [account](https://id.atlassian.com/manage/api-tokens) page.
+3. Don't use a high number for the `Lookup time` on a dily basis to "save" some API calls in case of any limits and your time.
 
 *use your company account to create Jira token.*
